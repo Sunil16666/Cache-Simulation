@@ -3,12 +3,19 @@ C_SRCS = main.c
 
 # Compiler and flags
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wextra
+CXX = g++
+CFLAGS = -std=c17 -Wall -Wextra
+CXXFLAGS = -std=c++14 -Wall -Wextra
+
+# SystemC path
+SYSC_PATH = / # Use Environment vars instead
+INCLUDES = -I$(SYSTEMC)/include
+LIBS = -L$(SYSTEMC)/lib -lsystemc
 
 # Executable name
-TARGET=simulation
+TARGET = simulation
 
-OBJ=$(C_SRCS:.c=.o)
+OBJ = $(C_SRCS:.c=.o)
 
 # usage: make / make all
 all: $(TARGET)
