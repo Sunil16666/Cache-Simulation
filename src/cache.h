@@ -3,7 +3,6 @@
 
 #include <systemc.h>
 
-SC_MODULE
 
 
 #endif //CACHE_H

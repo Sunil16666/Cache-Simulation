@@ -32,9 +32,9 @@ struct Result run_simulation(
  * Structure representing a request for the cache (memory request)
  */
 struct Request {
-    uint32_t addr; ///<
-    uint32_t data;
-    int we;
+    uint32_t addr; ///< Memory address
+    uint32_t data; ///< Requested Data
+    int we;        ///< WriteEnabled (true or false)
 };
 
 /**
