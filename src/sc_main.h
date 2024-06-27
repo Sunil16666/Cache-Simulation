@@ -1,6 +1,5 @@
-#ifndef SIMULATIONMAIN_H
-#define SIMULATIONMAIN_H
+#ifndef SCMAIN_H
+#define SCMAIN_H
 
 
-
-#endif //SIMULATIONMAIN_H
+#endif //SCMAIN_H

@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS = src/main.c
-CPP_SRCS = src/cache.cpp src/directMappedCache.cpp src/fullyAssociativeCache.cpp src/simulation.cpp
+CPP_SRCS = src/cache.cpp src/directMappedCache.cpp src/fullyAssociativeCache.cpp src/simulation.cpp src/sc_main
 
 # Compiler and flags
 CC = gcc
