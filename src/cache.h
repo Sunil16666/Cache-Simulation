@@ -18,6 +18,7 @@ private:
     size_t num_requests;
     CacheLine** cache;
     int primitiveGateCount;
+    sc_fifo<Request>* request_queue;
 
 
 public:
@@ -32,11 +33,11 @@ public:
         for (int i = 0; i < cacheLines; i++) {
             cache[i] = new CacheLine(CacheLineSize / sizeof(uint32_t));
         }
-        primitiveGateCount =  PRIMITIVEGATECOUNTCALC_H.calc(CacheType, args);
+        //primitiveGateCount =  PRIMITIVEGATECOUNTCALC_H.calc(CacheType, args);
+        request_queue = new sc_fifo<Request>(num_Requests);
     }
 
     virtual void process();
-
 };
 
 #endif //CACHE_H
