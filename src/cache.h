@@ -4,8 +4,8 @@
 #include <systemc.h>
 
 #include "cacheLine.h"
+#include "primitiveGateCountCalc.h"
 #include "simulation.h"
-
 
 class Cache : public sc_module {
 private:
@@ -16,22 +16,26 @@ private:
     const unsigned MEMORY_LATENCY;
     Request *requests;
     size_t num_requests;
-    uint32_t *cacheLine;
     CacheLine** cache;
+    int primitiveGateCount;
+
 
 public:
     Cache(int cycles, unsigned cacheLines, unsigned CacheLineSize, unsigned cacheLatency, unsigned memoryLatency,
-          size_t num_Requests, struct Request requests[num_Requests]): CYCLES(cycles), CACHE_LINES(cacheLines),
+          size_t num_Requests, Request requests[num_Requests]): CYCLES(cycles), CACHE_LINES(cacheLines),
                                                                        CACHE_LINE_SIZE(CacheLineSize),
                                                                        CACHE_LATENCY(cacheLatency),
                                                                        MEMORY_LATENCY(memoryLatency),
                                                                        num_requests(num_Requests) {
-        this->requests = new Request[num_Requests];
+        this->requests = requests;
         cache = new CacheLine*[cacheLines];
         for (int i = 0; i < cacheLines; i++) {
             cache[i] = new CacheLine(CacheLineSize / sizeof(uint32_t));
         }
+        primitiveGateCount =  PRIMITIVEGATECOUNTCALC_H.calc(CacheType, args);
     }
+
+    virtual void process();
 
 };
 
