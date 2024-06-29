@@ -8,18 +8,20 @@
 #include "simulation.h"
 
 class Cache : public sc_module {
-private:
+protected:
     const int CYCLES;
     const unsigned CACHE_LINES;
     const unsigned CACHE_LINE_SIZE;
     const unsigned CACHE_LATENCY;
     const unsigned MEMORY_LATENCY;
+    unsigned cache_line_word_num;
+    size_t misses;
+    size_t hits;
+    size_t cycles_taken;
     Request *requests;
     size_t num_requests;
     CacheLine** cache;
     int primitiveGateCount;
-    sc_fifo<Request>* request_queue;
-
 
 public:
     Cache(int cycles, unsigned cacheLines, unsigned CacheLineSize, unsigned cacheLatency, unsigned memoryLatency,
@@ -30,14 +32,15 @@ public:
                                                                        num_requests(num_Requests) {
         this->requests = requests;
         cache = new CacheLine*[cacheLines];
+        cache_line_word_num = CacheLineSize / sizeof(uint32_t);
         for (int i = 0; i < cacheLines; i++) {
-            cache[i] = new CacheLine(CacheLineSize / sizeof(uint32_t));
+            cache[i] = new CacheLine(cache_line_word_num);
         }
         //primitiveGateCount =  PRIMITIVEGATECOUNTCALC_H.calc(CacheType, args);
-        request_queue = new sc_fifo<Request>(num_Requests);
     }
 
     virtual void process();
+    virtual Result getResult();
 };
 
 #endif //CACHE_H
