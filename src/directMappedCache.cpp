@@ -6,9 +6,10 @@ void DirectMappedCache::process() {
     misses = 0;
     cycles_taken = 0;
     while (true) {
-        wait(CACHE_LATENCY);
-        cycles_taken += CACHE_LATENCY;
         for (size_t i = 0; i < num_requests; i++) {
+            wait(CACHE_LATENCY);
+            cycles_taken += CACHE_LATENCY;
+
             Request request = requests[i];
             uint32_t offset = request.addr & (1 << offset_bits) - 1;
             uint32_t index = request.addr >> offset_bits & (1 << index_bits) - 1;

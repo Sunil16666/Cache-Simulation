@@ -23,7 +23,6 @@ public:
         index_bits = log2(CACHE_LINES);
         tag_bits = 32 - offset_bits - index_bits;
         SC_THREAD(process);
-
     }
 
     void process() override;
