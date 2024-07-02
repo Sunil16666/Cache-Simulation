@@ -21,12 +21,12 @@ void DirectMappedCache::process() {
                     hits++;
                 } else {
                     misses++;
-                    wait(MEMORY_LATENCY);
-                    cycles_taken += MEMORY_LATENCY;
                     line->tag = tag;
                     line->valid[offset] = true;
                     line->data[offset] = request.data;
                 }
+                wait(MEMORY_LATENCY);
+                cycles_taken += MEMORY_LATENCY;
             } else {
                 if (line->tag == tag && line->valid[offset]) {
                     hits++;

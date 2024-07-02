@@ -16,8 +16,8 @@ CFLAGS = -std=c17 -Wall -Wextra
 CXXFLAGS = -std=c++14 -Wall -Wextra
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC)/include
-LIBS = -L$(SYSTEMC)/lib -lsystemc -lm
+INCLUDES = -I$(SYSTEMC_HOME)/include
+LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name
 TARGET = simulation
