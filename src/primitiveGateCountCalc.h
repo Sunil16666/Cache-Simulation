@@ -3,7 +3,12 @@
 
 
 
-
+class PrimitiveGateCountCalc {
+public:
+    static size_t primitiveGateCount() {
+        return 0; // to be implemented
+    }
+};
 
 
 
