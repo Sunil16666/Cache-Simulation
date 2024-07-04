@@ -16,15 +16,15 @@ public:
     Memory(sc_module_name name) : sc_module(name) {
         SC_METHOD(process);
         sensitive << clk.pos();
-        initialize_memory();
+        initialize();
+    }
+
+    void initialize() {
+        memory.clear();
     }
 
 private:
     std::map<uint32_t, uint32_t> memory;
-
-    void initialize_memory() {
-        memory.clear();
-    }
 
     void write(uint32_t addr, uint32_t data) {
         memory[addr] = data;

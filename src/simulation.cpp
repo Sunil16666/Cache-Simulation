@@ -62,6 +62,10 @@ struct Result run_simulation(
     controller.rdata(rdata);
     controller.DIRECT_MAPPED(directMapped);
 
+    memory.initialize();
+    cache.initialize();
+
+
     sc_start(cycles, SC_NS);
 
     Result result = controller.get_results();

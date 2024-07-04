@@ -42,12 +42,18 @@ public:
             SC_METHOD(process_direct_mapped);
         } else {
             SC_METHOD(process_fully_associative);
-            initialize_lru_list();
         }
         sensitive << clk.pos();
         cache = new CacheLine*[cacheLines];
-        for (int i = 0; i < cacheLines; i++) {
-            cache[i] = new CacheLine(cacheLineSize);
+    }
+
+    void initialize() {
+        for (int i = 0; i < CACHE_LINES; i++) {
+            delete cache[i];
+            cache[i] = new CacheLine(CACHE_LINE_SIZE);
+        }
+        if (!DIRECT_MAPPED) {
+            initialize_lru_list();
         }
     }
 
