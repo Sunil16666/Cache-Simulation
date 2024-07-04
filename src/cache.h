@@ -14,7 +14,7 @@ public:
     const unsigned CACHE_LINE_SIZE;
     const unsigned CACHE_LATENCY;
     const unsigned MEMORY_LATENCY;
-    const bool DIRECT_MAPPED = true;
+    const bool DIRECT_MAPPED;
     const unsigned offset_bits = log2(CACHE_LINE_SIZE);
     const unsigned index_bits = log2(CACHE_LINES);
     const unsigned tag_bits = 32 - offset_bits - index_bits;
@@ -41,6 +41,7 @@ public:
             SC_METHOD(process_direct_mapped);
         } else {
             SC_METHOD(process_fully_associative);
+            initialize_lru_list();
         }
         sensitive << clk.pos();
         cache = new CacheLine*[cacheLines];
@@ -54,6 +55,7 @@ private:
     std::list<unsigned> lru_list;
 
     void initialize_lru_list() {
+        lru_list.clear();
         for (unsigned i = 0; i < CACHE_LINES; ++i) {
             lru_list.push_back(i);
         }
@@ -72,9 +74,9 @@ private:
     {
         while (true) {
             wait(clk.posedge_event());
-            uint32_t offset = addr.read() & (1 << offset_bits) - 1;
-            uint32_t index = addr.read() >> offset_bits & (1 << index_bits) - 1;
-            uint32_t tag = addr.read() >> offset_bits + index_bits;
+            uint32_t offset = addr.read() & ((1 << offset_bits) - 1);
+            uint32_t index = (addr.read() >> offset_bits) & ((1 << index_bits) - 1);
+            uint32_t tag = addr.read() >> (offset_bits + index_bits);
 
             CacheLine* line = cache[index];
 
