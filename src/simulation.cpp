@@ -1,5 +1,11 @@
 #include "simulation.h"
 
+#include <systemc.h>
+
+#include "cache.h"
+#include "Controller.h"
+#include "memory.h"
+
 
 /**
  * Runs the SystemC Cache Simulation
@@ -25,6 +31,44 @@ struct Result run_simulation(
     struct Request requests[num_Requests],
     const char *tracefile) {
 
-    Result result = {};
+    sc_clock clk("clk", 1, SC_NS);
+    sc_signal<uint32_t> addr;
+    sc_signal<uint32_t> wdata;
+    sc_signal<uint32_t> rdata;
+    sc_signal<bool> we;
+    sc_signal<bool> hit;
+    sc_signal<size_t> cycles_;
+    sc_signal<size_t> total_hits;
+    sc_signal<size_t> total_misses;
+
+    Cache cache("cache", cacheLines, CacheLineSize, cacheLatency, memoryLatency, directMapped);
+    Memory memory("memory");
+    Controller controller("controller", &cache, &memory, directMapped, requests, num_Requests);
+
+    // Connect signals
+    cache.clk(clk);
+    cache.addr(addr);
+    cache.wdata(wdata);
+    cache.rdata(rdata);
+    cache.we(we);
+    cache.hit(hit);
+    cache.cycles_(cycles_);
+
+    // placeholder for memory signal connections
+
+    controller.clk(clk);
+    controller.total_hits(total_hits);
+    controller.total_misses(total_misses);
+    controller.rdata(rdata);
+    controller.DIRECT_MAPPED(directMapped);
+
+    sc_start(cycles, SC_NS);
+
+    Result result = controller.get_results();
+
+    if (tracefile) {
+        // TODO: Implement tracefile
+    }
+
     return result;
 }
