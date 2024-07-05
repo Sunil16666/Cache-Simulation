@@ -12,7 +12,8 @@ class Controller : public sc_module {
 public:
     sc_in<bool> clk;
     sc_signal<bool> we;
-    sc_signal<uint32_t> addr, wdata;
+    sc_signal<uint32_t> addr;
+    sc_signal<uint32_t> wdata;
     sc_out<uint32_t> rdata;
     sc_out<size_t> total_hits;
     sc_out<size_t> total_misses;

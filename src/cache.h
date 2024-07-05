@@ -27,6 +27,11 @@ public:
     sc_out<bool> hit;
     sc_out<size_t> cycles_;
 
+    sc_in<uint32_t> memory_rdata;
+    sc_out<uint32_t> memory_addr;
+    sc_out<uint32_t> memory_wdata;
+    sc_out<bool> memory_we;
+
     SC_HAS_PROCESS(Cache);
 
     Cache(sc_module_name name, unsigned cacheLines, unsigned cacheLineSize, unsigned cacheLatency,
@@ -94,14 +99,18 @@ private:
                 // hit
                 if (line->tag == tag && line->valid[offset]) {
                     hit.write(true);
-                    mem.write(line->data[offset]); // placeholder for memory write
+                    memory_addr->write(addr.read());
+                    memory_wdata->write(wdata.read());
+                    memory_we->write(true); // write to memory
                     // miss
                 } else {
                     hit.write(false);
                     line->tag = tag;
                     line->valid[offset] = true;
                     line->data[offset] = wdata.read();
-                    mem.write(line->data[offset]); // placeholder for memory write
+                    memory_addr->write(addr.read());
+                    memory_wdata->write(wdata.read());
+                    memory_we->write(true); // write to memory
                 }
             // read
             } else {
@@ -113,10 +122,14 @@ private:
                 } else {
                     cycles += MEMORY_LATENCY;
                     hit.write(false);
-                    rdata.write(mem.read(line->data[offset])); // placeholder for memory read
+                    memory_addr.write(addr.read());
+                    memory_we.write(false); // read from memory
+                    wait(clk.posedge_event());
+                    uint32_t memory_data = memory_rdata.read();
+                    rdata.write(memory_data);
                     line->valid[offset] = true;
                     line->tag = tag;
-                    line->data[offset] = mem.read(line->data[offset]); // placeholder for memory read
+                    line->data[offset] = memory_data;
                 }
             }
             cycles_.write(cycles);
@@ -137,14 +150,15 @@ private:
             int lineIndex = linePointer != cache + CACHE_LINES ? linePointer - cache : -1;
             size_t cycles = CACHE_LATENCY;
 
-            if (lineIndex != -1)
-            {
+            if (lineIndex != -1) {
                 hit.write(true);
                 if (we.read()) {
                     cycles += MEMORY_LATENCY;
                     cache[lineIndex]->data[offset] = wdata.read();
                     cache[lineIndex]->valid[offset] = true;
-                    mem.write(cache[lineIndex]->data[offset]); // placeholder for memory write
+                    memory_addr.write(addr.read());
+                    memory_wdata.write(wdata.read());
+                    memory_we.write(true); // write to memory
                 } else {
                     rdata.write(cache[lineIndex]->data[offset]);
                 }
@@ -156,13 +170,19 @@ private:
                     cache[lru_pointer]->tag = tag;
                     cache[lru_pointer]->data[offset] = wdata.read();
                     cache[lru_pointer]->valid[offset] = true;
-                    mem.write(cache[lru_pointer]->data[offset]); // placeholder for memory write
+                    memory_addr.write(addr.read());
+                    memory_wdata.write(wdata.read());
+                    memory_we.write(true); // write to memory
                     update_lru(lru_pointer);
                 } else {
                     cycles += MEMORY_LATENCY;
-                    rdata.write(mem.read(cache[lru_pointer]->data[offset])); // placeholder for memory read
+                    memory_addr.write(addr.read());
+                    memory_we.write(false); // read from memory
+                    wait(clk.posedge_event()); // wait for memory to provide data
+                    uint32_t memory_data = memory_rdata.read();
+                    rdata.write(memory_data);
                     cache[lru_pointer]->tag = tag;
-                    cache[lru_pointer]->data[offset] = mem.read(cache[lru_pointer]->data[offset]); // placeholder for memory read
+                    cache[lru_pointer]->data[offset] = memory_data;
                     cache[lru_pointer]->valid[offset] = true;
                     update_lru(lru_pointer);
                 }
@@ -170,7 +190,6 @@ private:
             cycles_.write(cycles);
         }
     }
-
 };
 
 #endif //CACHE_H

@@ -41,6 +41,11 @@ struct Result run_simulation(
     sc_signal<size_t> total_hits;
     sc_signal<size_t> total_misses;
 
+    sc_signal<uint32_t> memory_addr;
+    sc_signal<uint32_t> memory_wdata;
+    sc_signal<uint32_t> memory_rdata;
+    sc_signal<bool> memory_we;
+
     Cache cache("cache", cacheLines, CacheLineSize, cacheLatency, memoryLatency, directMapped);
     Memory memory("memory");
     Controller controller("controller", &cache, &memory, directMapped, requests, num_Requests);
@@ -54,9 +59,21 @@ struct Result run_simulation(
     cache.hit(hit);
     cache.cycles_(cycles_);
 
-    // placeholder for memory signal connections
+    cache.memory_addr(memory_addr);
+    cache.memory_wdata(memory_wdata);
+    cache.memory_rdata(memory_rdata);
+    cache.memory_we(memory_we);
+
+    memory.clk(clk);
+    memory.addr(memory_addr);
+    memory.wdata(memory_wdata);
+    memory.we(memory_we);
+    memory.rdata(memory_rdata);
 
     controller.clk(clk);
+    controller.addr.write(addr);
+    controller.wdata.write(wdata);
+    controller.we.write(we);
     controller.total_hits(total_hits);
     controller.total_misses(total_misses);
     controller.rdata(rdata);
