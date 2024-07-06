@@ -40,8 +40,9 @@ public:
 
     struct Result get_results() const
     {
-        const size_t primitiveGateCount = PrimitiveGateCountCalc::primitiveGateCount();
-        return {cycles, miss_count, hit_count, primitiveGateCount}; // primitiveGateCount to be implemented
+        const size_t primitiveGateCount = PrimitiveGateCountCalc::primitiveGateCount(
+            cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->tag_bits, cache->index_bits, DIRECT_MAPPED);
+        return {cycles, miss_count, hit_count, primitiveGateCount};
     }
 
 private:
