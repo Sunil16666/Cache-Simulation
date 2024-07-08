@@ -77,7 +77,6 @@ struct Result run_simulation(
     controller.total_hits(total_hits);
     controller.total_misses(total_misses);
     controller.rdata(rdata);
-    controller.DIRECT_MAPPED(directMapped);
 
     memory.initialize();
     cache.initialize();

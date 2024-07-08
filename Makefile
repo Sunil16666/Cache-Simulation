@@ -6,8 +6,8 @@
 # ---------------------------------------
 
 # Entry point for the program
-C_SRCS = src/main.c
-CPP_SRCS = src/cache.cpp src/memory.cpp src/primitiveGateCountCalc.cpp src/simulation.cpp src/testBench.cpp
+C_SRCS =
+CPP_SRCS =  src/primitiveGateCountCalc.cpp src/simulation.cpp src/testBench.cpp
 
 # Compiler and flags
 CC = gcc
@@ -16,7 +16,7 @@ CFLAGS = -std=c17 -Wall -Wextra
 CXXFLAGS = -std=c++14 -Wall -Wextra
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC_HOME)/include -I./src
+INCLUDES = -I$(SYSTEMC_HOME)/include
 LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name

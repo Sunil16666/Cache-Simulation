@@ -36,7 +36,15 @@ private:
 
     void read(uint32_t addr)
     {
-        rdata.write(memory[addr]);
+        auto it = memory.find(addr);
+        if (it != memory.end())
+        {
+            rdata.write(it->second);
+        }
+        else
+        {
+            rdata.write(0);
+        }
     }
 
     void process()
