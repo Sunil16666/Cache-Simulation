@@ -99,7 +99,7 @@ void MatrixMultiplication::printMatrix(int** matrix, int n) const {
         std::cout << std::endl;
     }
 }
-
+//
 //getters
 int** MatrixMultiplication::getA() const {
     return A;
