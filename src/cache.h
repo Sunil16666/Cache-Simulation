@@ -8,7 +8,8 @@
 #include "cacheLine.h"
 #include "simulation.h"
 
-class Cache : public sc_module {
+class Cache : public sc_module
+{
 public:
     const unsigned CACHE_LINES;
     const unsigned CACHE_LINE_SIZE;
@@ -43,21 +44,27 @@ public:
         MEMORY_LATENCY(memoryLatency),
         DIRECT_MAPPED(directMapped)
     {
-        if (DIRECT_MAPPED) {
+        if (DIRECT_MAPPED)
+        {
             SC_METHOD(process_direct_mapped);
-        } else {
+        }
+        else
+        {
             SC_METHOD(process_fully_associative);
         }
         sensitive << clk.pos();
         cache = new CacheLine*[cacheLines];
     }
 
-    void initialize() {
-        for (int i = 0; i < CACHE_LINES; i++) {
+    void initialize()
+    {
+        for (int i = 0; i < CACHE_LINES; i++)
+        {
             delete cache[i];
             cache[i] = new CacheLine(CACHE_LINE_SIZE);
         }
-        if (!DIRECT_MAPPED) {
+        if (!DIRECT_MAPPED)
+        {
             initialize_lru_list();
         }
     }
@@ -66,25 +73,30 @@ private:
     CacheLine** cache;
     std::list<unsigned> lru_list;
 
-    void initialize_lru_list() {
+    void initialize_lru_list()
+    {
         lru_list.clear();
-        for (unsigned i = 0; i < CACHE_LINES; ++i) {
+        for (unsigned i = 0; i < CACHE_LINES; ++i)
+        {
             lru_list.push_back(i);
         }
     }
 
-    void update_lru(unsigned index) {
+    void update_lru(unsigned index)
+    {
         lru_list.remove(index);
         lru_list.push_back(index);
     }
 
-    unsigned get_lru_index() {
+    unsigned get_lru_index()
+    {
         return lru_list.front();
     }
 
     void process_direct_mapped()
     {
-        while (true) {
+        while (true)
+        {
             wait(clk.posedge_event());
             uint32_t offset = addr.read() & ((1 << offset_bits) - 1);
             uint32_t index = (addr.read() >> offset_bits) & ((1 << index_bits) - 1);
@@ -94,16 +106,20 @@ private:
 
             size_t cycles = CACHE_LATENCY;
             // write
-            if (we.read()) {
+            if (we.read())
+            {
                 cycles += MEMORY_LATENCY;
                 // hit
-                if (line->tag == tag && line->valid[offset]) {
+                if (line->tag == tag && line->valid[offset])
+                {
                     hit.write(true);
                     memory_addr->write(addr.read());
                     memory_wdata->write(wdata.read());
                     memory_we->write(true); // write to memory
                     // miss
-                } else {
+                }
+                else
+                {
                     hit.write(false);
                     line->tag = tag;
                     line->valid[offset] = true;
@@ -112,14 +128,19 @@ private:
                     memory_wdata->write(wdata.read());
                     memory_we->write(true); // write to memory
                 }
-            // read
-            } else {
+                // read
+            }
+            else
+            {
                 // hit
-                if (line->tag == tag && line->valid[offset]) {
+                if (line->tag == tag && line->valid[offset])
+                {
                     hit.write(true);
                     rdata.write(line->data[offset]);
                     // miss
-                } else {
+                }
+                else
+                {
                     cycles += MEMORY_LATENCY;
                     hit.write(false);
                     memory_addr.write(addr.read());
@@ -135,6 +156,7 @@ private:
             cycles_.write(cycles);
         }
     }
+
     void process_fully_associative()
     {
         while (true)
@@ -150,22 +172,29 @@ private:
             int lineIndex = linePointer != cache + CACHE_LINES ? linePointer - cache : -1;
             size_t cycles = CACHE_LATENCY;
 
-            if (lineIndex != -1) {
+            if (lineIndex != -1)
+            {
                 hit.write(true);
-                if (we.read()) {
+                if (we.read())
+                {
                     cycles += MEMORY_LATENCY;
                     cache[lineIndex]->data[offset] = wdata.read();
                     cache[lineIndex]->valid[offset] = true;
                     memory_addr.write(addr.read());
                     memory_wdata.write(wdata.read());
                     memory_we.write(true); // write to memory
-                } else {
+                }
+                else
+                {
                     rdata.write(cache[lineIndex]->data[offset]);
                 }
-            } else {
+            }
+            else
+            {
                 hit.write(false);
                 uint32_t lru_pointer = get_lru_index();
-                if (we.read()) {
+                if (we.read())
+                {
                     cycles += MEMORY_LATENCY;
                     cache[lru_pointer]->tag = tag;
                     cache[lru_pointer]->data[offset] = wdata.read();
@@ -174,7 +203,9 @@ private:
                     memory_wdata.write(wdata.read());
                     memory_we.write(true); // write to memory
                     update_lru(lru_pointer);
-                } else {
+                }
+                else
+                {
                     cycles += MEMORY_LATENCY;
                     memory_addr.write(addr.read());
                     memory_we.write(false); // read from memory

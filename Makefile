@@ -6,8 +6,8 @@
 # ---------------------------------------
 
 # Entry point for the program
-C_SRCS = src/main.c
-CPP_SRCS = src/cache.cpp src/directMappedCache.cpp src/fullyAssociativeCache.cpp src/simulation.cpp src/sc_main.cpp
+C_SRCS =
+CPP_SRCS =  src/primitiveGateCountCalc.cpp src/simulation.cpp src/testBench.cpp
 
 # Compiler and flags
 CC = gcc
