@@ -8,7 +8,8 @@
 #include "primitiveGateCountCalc.h"
 
 
-class Controller : public sc_module {
+class Controller : public sc_module
+{
 public:
     sc_in<bool> clk;
     sc_signal<bool> we;
@@ -40,7 +41,7 @@ public:
 
     struct Result get_results() const
     {
-        const size_t primitiveGateCount = PrimitiveGateCountCalc::primitiveGateCount(
+        const size_t primitiveGateCount = ::primitiveGateCount(
             cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->tag_bits, cache->index_bits, DIRECT_MAPPED);
         return {cycles, miss_count, hit_count, primitiveGateCount};
     }
@@ -57,7 +58,8 @@ private:
 
     void controller_process()
     {
-        while (request_counter < num_requests) {
+        while (request_counter < num_requests)
+        {
             const struct Request& request = requests[request_counter];
             addr.write(request.addr);
             wdata.write(request.data);
@@ -65,9 +67,12 @@ private:
 
             wait(clk.posedge_event());
             cycles += cache->cycles_.read();
-            if (cache->hit.read()) {
+            if (cache->hit.read())
+            {
                 hit_count++;
-            } else {
+            }
+            else
+            {
                 miss_count++;
             }
             rdata.write(cache->rdata.read());

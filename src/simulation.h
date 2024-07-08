@@ -26,24 +26,26 @@ struct Result run_simulation(
     unsigned memoryLatency,
     size_t num_Requests,
     struct Request requests[num_Requests],
-    const char *tracefile);
+    const char* tracefile);
 
 /**
  * Structure representing a request for the cache (memory request)
  */
-struct Request {
+struct Request
+{
     uint32_t addr; ///< Memory address
     uint32_t data; ///< Requested Data
-    int we;        ///< WriteEnabled (true or false)
+    int we; ///< WriteEnabled (true or false)
 };
 
 /**
  * Structure representing the result of a SystemC Cache Simulation
  */
-struct Result {
-    size_t cycles;             ///< Number of cycles needed to complete the simulation
-    size_t misses;             ///< Number of total misses occured during the simulation
-    size_t hits;               ///< Number of total hits occured during the simulation
+struct Result
+{
+    size_t cycles; ///< Number of cycles needed to complete the simulation
+    size_t misses; ///< Number of total misses occured during the simulation
+    size_t hits; ///< Number of total hits occured during the simulation
     size_t primitiveGateCount; ///< Number of primitive Gates needed to realize such Cache
 };
 

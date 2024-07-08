@@ -29,8 +29,8 @@ struct Result run_simulation(
     unsigned memoryLatency,
     size_t num_Requests,
     struct Request requests[num_Requests],
-    const char *tracefile) {
-
+    const char* tracefile)
+{
     sc_clock clk("clk", 1, SC_NS);
     sc_signal<uint32_t> addr;
     sc_signal<uint32_t> wdata;
@@ -87,7 +87,8 @@ struct Result run_simulation(
 
     Result result = controller.get_results();
 
-    if (tracefile) {
+    if (tracefile)
+    {
         // TODO: Implement tracefile
     }
 
