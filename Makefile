@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS =
-CPP_SRCS =  src/primitiveGateCountCalc.cpp src/simulation.cpp src/testBench.cpp
+CPP_SRCS = src/primitiveGateCountCalc.cpp src/simulation.cpp src/sc_main.cpp src/data_gen/matrix_multiplication.cpp src/file_processing/processing_unit.cpp src/testing/main_datagen.cpp src/testing/main_file_processing.cpp
 
 # Compiler and flags
 CC = gcc
@@ -20,7 +20,7 @@ INCLUDES = -I$(SYSTEMC_HOME)/include
 LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name
-TARGET = simulation
+TARGET = sc_main
 
 C_OBJS = $(C_SRCS:.c=.o)
 CPP_OBJS = $(CPP_SRCS:.cpp=.o)
@@ -35,7 +35,7 @@ endif
 # Add rpath except for MacOS
 UNAME_S := $(shell uname -s)
 ifneq ($(UNAME_S), Darwin)
-    LDFLAGS += -Wl,-rpath=$(SYSC_PATH)/lib
+    LDFLAGS += -Wl,-rpath=$(SYSTEMC_HOME)/lib
 endif
 
 # usage: make / make all
