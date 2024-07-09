@@ -1,7 +1,7 @@
 //
 // Created by Yannick Schuermann on 08.07.24.
 //
-#include "data_gen/matrix_multiplication.h"
+#include "../data_gen/matrix_multiplication.h"
 #include <iostream>
 
 int main() {

@@ -5,11 +5,11 @@
 //
 // Created by Yannick Schuermann on 07.07.24. (für testen)
 //
-#include "file_processing/processing_unit.h"
+#include "../file_processing/processing_unit.h"
 #include <iostream>
 
 int main() {
-    ProcessingUnit test("csv/matrix_multiplication_trace.csv");
+    ProcessingUnit test("../csv/matrix_multiplication_trace.csv");
 
     size_t numRequests;
     Request* requests;
