@@ -3,59 +3,67 @@
 #include <map>
 #include <systemc.h>
 
+/**
+ * Memory Module for the Simulation
+ */
 class Memory : public sc_module
 {
 public:
-    sc_in<bool> clk;
-    sc_in<bool> we;
-    sc_in<uint32_t> addr;
-    sc_in<uint32_t> wdata;
-    sc_out<uint32_t> rdata;
+    sc_in<bool> clk;        ///< Clock Signal
+    sc_in<bool> we;         ///< Write Enable Signal
+    sc_in<uint32_t> addr;   ///< Address Signal
+    sc_in<uint32_t> wdata;  ///< Write Data Signal
+    sc_out<uint32_t> rdata; ///< Read Data Signal
 
-    SC_HAS_PROCESS(Memory);
+    SC_HAS_PROCESS(Memory); ///< Macro for multiple-argument constructor of the Module
 
+    /**
+     * Constructor of the Module
+     * @param name
+     */
     Memory(sc_module_name name) : sc_module(name)
     {
+        // Defining the process of the Module
         SC_METHOD(process);
         sensitive << clk.pos();
-        initialize();
     }
 
+    // Clean up the memory
     void initialize()
     {
         memory.clear();
     }
 
 private:
-    std::map<uint32_t, uint32_t> memory;
+    std::map<uint32_t, uint32_t> memory;     ///< Memory Map (Address, Data)
 
-    void write(uint32_t addr, uint32_t data)
+    void write(uint32_t addr, uint32_t data) ///< Write to the Memory
     {
         memory[addr] = data;
     }
 
-    void read(uint32_t addr)
+    void read(uint32_t addr)                 ///< Read from the Memory
     {
-        auto it = memory.find(addr);
-        if (it != memory.end())
+        auto it = memory.find(addr);         ///< Find the address in the memory
+        if (it != memory.end())              ///< If found
         {
-            rdata.write(it->second);
+            rdata.write(it->second);         ///< Write the data to the read data signal
         }
         else
         {
-            rdata.write(0);
+            rdata.write(0);            ///< Else write 0
         }
     }
 
-    void process()
+    void process()                                      ///< Process the memory requests
     {
-        if (we.read())
+        if (we.read())                                  ///< If write enabled
         {
-            write(addr.read(), wdata.read());
+            write(addr.read(), wdata.read());  ///< Write to memory
         }
         else
         {
-            read(addr.read());
+            read(addr.read());                     ///< Else read from memory
         }
     }
 };

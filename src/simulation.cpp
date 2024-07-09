@@ -31,21 +31,22 @@ struct Result run_simulation(
     struct Request requests[num_Requests],
     const char* tracefile)
 {
-    sc_clock clk("clk", 1, SC_NS);
-    sc_signal<uint32_t> addr;
-    sc_signal<uint32_t> wdata;
-    sc_signal<uint32_t> rdata;
-    sc_signal<bool> we;
-    sc_signal<bool> hit;
-    sc_signal<size_t> cycles_;
-    sc_signal<size_t> total_hits;
-    sc_signal<size_t> total_misses;
+    sc_clock clk("clk", 1, SC_NS); ///< Clock signal
+    sc_signal<uint32_t> addr;                             ///< Address signal
+    sc_signal<uint32_t> wdata;                            ///< Write Data signal
+    sc_signal<uint32_t> rdata;                            ///< Read Data signal
+    sc_signal<bool> we;                                   ///< Write Enable signal
+    sc_signal<bool> hit;                                  ///< Hit signal
+    sc_signal<size_t> cycles_;                            ///< Cycles signal
+    sc_signal<size_t> total_hits;                         ///< Total Hits signal
+    sc_signal<size_t> total_misses;                       ///< Total Misses signal
 
-    sc_signal<uint32_t> memory_addr;
-    sc_signal<uint32_t> memory_wdata;
-    sc_signal<uint32_t> memory_rdata;
-    sc_signal<bool> memory_we;
+    sc_signal<uint32_t> memory_addr;                      ///< Memory Address signal
+    sc_signal<uint32_t> memory_wdata;                     ///< Memory Write Data signal
+    sc_signal<uint32_t> memory_rdata;                     ///< Memory Read Data signal
+    sc_signal<bool> memory_we;                            ///< Memory Write Enable signal
 
+    // Create instances of Cache, Memory and Controller
     Cache cache("cache", cacheLines, CacheLineSize, cacheLatency, memoryLatency, directMapped);
     Memory memory("memory");
     Controller controller("controller", &cache, &memory, directMapped, requests, num_Requests);
@@ -78,18 +79,22 @@ struct Result run_simulation(
     controller.total_misses(total_misses);
     controller.rdata(rdata);
 
+    // Initialize the Cache and Memory
     memory.initialize();
     cache.initialize();
 
-
+    // Start the simulation
     sc_start(cycles, SC_NS);
 
+    // Get the results
     Result result = controller.get_results();
 
+    // Handle tracefile if needed
     if (tracefile)
     {
         // TODO: Implement tracefile
     }
 
+    // Return the results of the simulation
     return result;
 }
