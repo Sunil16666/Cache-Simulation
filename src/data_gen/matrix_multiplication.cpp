@@ -7,7 +7,7 @@
 
 //constructor
 MatrixMultiplication::MatrixMultiplication(int* A_elements, int* B_elements, int n)
-    : path("csv/matrix_multiplication_trace.csv"), n(n) {
+    : path("../csv/matrix_multiplication_trace.csv"), n(n) {
     //makematrix a b and c
     A = makeMatrix(A_elements, n);
     B = makeMatrix(B_elements, n);
