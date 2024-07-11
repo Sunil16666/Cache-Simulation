@@ -6,8 +6,8 @@
 # ---------------------------------------
 
 # Entry point for the program
-C_SRCS =
-CPP_SRCS = src/primitiveGateCountCalc.cpp src/simulation.cpp src/sc_main.cpp src/data_gen/matrix_multiplication.cpp src/file_processing/processing_unit.cpp src/testing/main_datagen.cpp src/testing/main_file_processing.cpp
+C_SRCS = src/frontend/file_processing.c
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/simulation/sc_main.cpp
 
 # Compiler and flags
 CC = gcc
@@ -16,7 +16,7 @@ CFLAGS = -std=c17 -Wall -Wextra
 CXXFLAGS = -std=c++14 -Wall -Wextra
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC_HOME)/include
+INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
 LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name
