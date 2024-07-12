@@ -19,11 +19,11 @@ size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned 
                           bool directMapped)
 {
     // Calculate the number of gates required to realize a multiplexer, comparator, and storage cells
-    unsigned const muxGateCount = tagBits * ::muxGateCount(cacheLines, indexBits, directMapped);
+    unsigned const muxGateCount = tagBits * ::muxGateCount(cacheLines, indexBits);
     unsigned const comparatorGateCount = directMapped
                                   ? ::comparatorGateCount(tagBits)
                                   : ::comparatorGateCount(tagBits) * cacheLines;
-    unsigned const storageGateCount = ::storageGateCount(CacheLineSize, cacheLines, tagBits, directMapped);
+    unsigned const storageGateCount = ::storageGateCount(CacheLineSize, cacheLines, tagBits);
 
     // If direct mapped, we need the mux, comparator, and storage gates
     if (directMapped)
