@@ -37,30 +37,13 @@ struct Result run_simulation(
     sc_signal<size_t> total_misses;                       ///< Total Misses signal
     sc_signal<size_t> primitiveGateCount;                 ///< Primitive Gate Count signal
     sc_signal<Request*> requests_out;                     ///< Requests Feedback signal
-    sc_signal<bool> we;                                   ///< Write Enable signal
+    sc_signal<bool> we;                                   ///< Write Enable signa
     sc_signal<uint32_t> addr;                             ///< Address signal
-    sc_signal<uint32_t> wdata;                            ///< Write-Data signal
-    sc_signal<uint32_t> rdata;                            ///< Read-Data signal
     sc_signal<uint32_t> memory_rdata;                     ///< Memory Read-Data signal
     sc_signal<uint32_t> memory_wdata;                     ///< Memory Write-Data signal
 
     // Create instances of Cache, Memory and Controller
-    Cache cache("cache", cacheLines, CacheLineSize, cacheLatency, memoryLatency, directMapped);
-    Memory memory("memory");
-    Controller controller("controller", &cache, directMapped, requests, num_Requests);
-
-    // TODO: Connect signals properly
-    cache.clk(clk);
-    cache.memory_rdata(memory_rdata);
-    cache.memory_wdata(memory_wdata);
-    cache.memory_we(we);
-    cache.addr(addr);
-
-    memory.clk(clk);
-    memory.rdata(memory_rdata);
-    memory.wdata(memory_wdata);
-    memory.we(we);
-    memory.addr(addr);
+    Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency, memoryLatency);
 
     controller.clk(clk);
     controller.total_hits(total_hits);
@@ -68,10 +51,6 @@ struct Result run_simulation(
     controller.cycles_(cycles_);
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
-
-    // Initialize the Cache and Memory
-    memory.initialize();
-    cache.initialize();
 
     // Start the simulation
     sc_start(cycles, SC_NS);
