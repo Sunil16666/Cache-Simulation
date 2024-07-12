@@ -34,7 +34,7 @@ public:
     sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal
 
     const bool DIRECT_MAPPED; ///< boolean flag for cache mapping
-    size_t const cycles; ///< Number of Cycles
+    size_t cycles; ///< Number of Cycles
     size_t request_counter; ///< Request Counter
 
     SC_HAS_PROCESS(Controller); ///< Macro for multiple-argument constructor of the Module
