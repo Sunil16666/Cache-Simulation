@@ -1,5 +1,7 @@
 #include "primitiveGateCountCalc.h"
 
+#include <systemc>
+
 /**
  * Function to calculate the number of primitive gates required to implement the cache
  * @param cacheLines

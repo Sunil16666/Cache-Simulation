@@ -14,16 +14,21 @@
 class Controller : public sc_module
 {
 public:
-    sc_in<bool> clk;             ///< Clock Signal
-    sc_signal<bool> we;          ///< Write Enable Signal
-    sc_signal<uint32_t> addr;    ///< Address Signal
-    sc_signal<uint32_t> wdata;   ///< Write Data Signal
-    sc_out<uint32_t> rdata;      ///< Read Data Signal
-    sc_out<size_t> total_hits;   ///< Total Hits Signal
-    sc_out<size_t> total_misses; ///< Total Misses Signal
-    const bool DIRECT_MAPPED;    ///< boolean flag for cache mapping
+    sc_in<bool> clk;                   ///< Clock Signal
 
-    SC_HAS_PROCESS(Controller);  ///< Macro for multiple-argument constructor of the Module
+    sc_signal<bool> we;                ///< Write Enable Signal
+    sc_signal<uint32_t> addr;          ///< Address Signal
+    sc_signal<uint32_t> data;          ///< Data Signal
+
+    sc_out<Request*> requests_out;     ///< Requests Feedback Signal
+    sc_out<size_t> total_hits;         ///< Total Hits Signal
+    sc_out<size_t> total_misses;       ///< Total Misses Signal
+    sc_out<size_t> cycles_;            ///< Cycles Signal
+    sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal
+
+    const bool DIRECT_MAPPED;          ///< boolean flag for cache mapping
+
+    SC_HAS_PROCESS(Controller);        ///< Macro for multiple-argument constructor of the Module
 
     /**
      * Constructor of the Module
@@ -52,18 +57,6 @@ public:
         sensitive << clk.pos();
     }
 
-    /**
-     * Destructor of the Controller Module
-     * @return Result
-     */
-    struct Result get_results() const
-    {
-        // Calculate the number of primitive gates needed to implement the cache in hardware
-        const size_t primitiveGateCount = ::primitiveGateCount(
-            cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->tag_bits, cache->index_bits, DIRECT_MAPPED);
-        return {cycles, miss_count, hit_count, primitiveGateCount};
-    }
-
 private:
     Cache* cache;             ///< Cache Module
     Memory* memory;           ///< Memory Module
@@ -83,13 +76,21 @@ private:
         while (request_counter < num_requests)
         {
             const struct Request& request = requests[request_counter]; ///< Get the current request
-            addr.write(request.addr);                                  ///< Write the address to the Cache
-            wdata.write(request.data);                                 ///< Write the data to the Cache
-            we.write(request.we);                                      ///< Write the we-signal to the Cache
+            addr.write(request.addr);
+            data.write(request.data);
+            we.write(request.we);
+            cache->addr(addr);                                         ///< Write the address to the Cache
+            cache->wdata(data);                                        ///< Write the data to the Cache
+            cache->we(we);                                             ///< Write the we-signal to the Cache
 
             // Wait for the Cache to process the request (one cycle)
             wait(clk.posedge_event());
-            cycles += cache->cycles_.read();                           ///< Increment the number of the total cycles
+            if (!request.we)
+            {
+                requests[request_counter].data = cache->rdata.read();
+            }
+
+            cycles++;                                                  ///< Increment the number of the total cycles
             if (cache->hit.read())                                     ///< Check for hit or miss
             {
                 hit_count++;
@@ -98,11 +99,18 @@ private:
             {
                 miss_count++;
             }
-            rdata.write(cache->rdata.read());                    ///< Read the data from the Cache
+
             request_counter++;                                         ///< Increment the request counter
         }
+
+        // Output the final values to the signals
         total_hits.write(hit_count);                                   ///< Write the total hits to the output signal
         total_misses.write(miss_count);                                ///< Write the total misses to the output signal
+        cycles_.write(cycles);                                         ///< Write the total cycles to the output signal
+        primitiveGateCount.write(::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->TAG_BITS,
+                                                      cache->INDEX_BITS,
+                                                      DIRECT_MAPPED)); ///< Calculate and write the primitive gate count
+        requests_out.write(requests);
     }
 };
 

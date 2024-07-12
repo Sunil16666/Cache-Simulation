@@ -1,6 +1,8 @@
 #ifndef PRIMITIVEGATECOUNTCALC_H
 #define PRIMITIVEGATECOUNTCALC_H
 
+#include <systemc>
+
 /**
  * Function prototype to calculate the number of primitive gates required to implement the cache
  * @param cacheLines

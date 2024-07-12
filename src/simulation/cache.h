@@ -19,14 +19,15 @@ public:
     const unsigned CACHE_LATENCY;                            ///< Latency of the Cache in Cycles
     const unsigned MEMORY_LATENCY;                           ///< Latency of the Memory in Cycles
     const bool DIRECT_MAPPED;                                ///< boolean flag for cache mapping
-    const unsigned offset_bits = log2(CACHE_LINE_SIZE);    ///< Number of bits for the offset
-    const unsigned index_bits = log2(CACHE_LINES);         ///< Number of bits for the index
-    const unsigned tag_bits = 32 - offset_bits - index_bits; ///< Number of bits for the tag
+    const unsigned OFFSET_BITS = log2(CACHE_LINE_SIZE);    ///< Number of bits for the offset
+    const unsigned INDEX_BITS = log2(CACHE_LINES);         ///< Number of bits for the index
+    const unsigned TAG_BITS = 32 - OFFSET_BITS - INDEX_BITS; ///< Number of bits for the tag
 
     sc_in<bool> clk;                                         ///< Clock Signal
     sc_in<bool> we;                                          ///< Write Enable Signal
     sc_in<uint32_t> addr;                                    ///< Address Signal
     sc_in<uint32_t> wdata;                                   ///< Write Data Signal
+
     sc_out<uint32_t> rdata;                                  ///< Read Data Signal
     sc_out<bool> hit;                                        ///< Hit Signal
     sc_out<size_t> cycles_;                                  ///< Number of Cycles needed to complete the operation
@@ -64,7 +65,7 @@ public:
         {
             SC_METHOD(process_fully_associative); ///< Else process Fully Associative Cache
         }
-        sensitive << clk.pos();
+        sensitive << clk.pos() << addr << we << wdata << rdata; ///< Sensitivity List
 
         // Initialize the Cache
         cache = new CacheLine*[cacheLines];
@@ -128,9 +129,9 @@ private:
         {
             wait(clk.posedge_event());
 
-            uint32_t offset = addr.read() & ((1 << offset_bits) - 1);                ///< Offset for current request
-            uint32_t index = (addr.read() >> offset_bits) & ((1 << index_bits) - 1); ///< Index for current request
-            uint32_t tag = addr.read() >> (offset_bits + index_bits);                ///< Tag for current request
+            uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1);                ///< Offset for current request
+            uint32_t index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1); ///< Index for current request
+            uint32_t tag = addr.read() >> (OFFSET_BITS + INDEX_BITS);                ///< Tag for current request
 
             CacheLine* line = cache[index];                     ///< Cache Line for the current request
             size_t cycles = CACHE_LATENCY;                      ///< Add Cache Latency to the total cycles
@@ -187,8 +188,8 @@ private:
         {
             wait(clk.posedge_event());
 
-            uint32_t offset = addr.read() & (1 << offset_bits) - 1; ///< Offset for current request
-            uint32_t tag = addr.read() >> offset_bits;              ///< Tag for current request
+            uint32_t offset = addr.read() & (1 << OFFSET_BITS) - 1; ///< Offset for current request
+            uint32_t tag = addr.read() >> OFFSET_BITS;              ///< Tag for current request
 
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(
