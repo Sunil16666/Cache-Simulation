@@ -34,31 +34,34 @@ public:
     sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal
 
     const bool DIRECT_MAPPED; ///< boolean flag for cache mapping
-    size_t cycles; ///< Number of Cycles
+    size_t const cycles; ///< Number of Cycles
     size_t request_counter; ///< Request Counter
 
     SC_HAS_PROCESS(Controller); ///< Macro for multiple-argument constructor of the Module
 
+
     /**
-     * Constructor of the Module
+     * Controller Module Constructor
      * @param name
-     * @param cache
-     * @param memory
      * @param directMapped
      * @param requests
      * @param num_requests
+     * @param cacheLines
+     * @param cacheLineSize
+     * @param cacheLatency
+     * @param memoryLatency
      */
-    Controller(sc_module_name name, bool directMapped, struct Request* requests,
-               size_t num_requests, unsigned cacheLines, unsigned cacheLineSize, unsigned cacheLatency,
-               unsigned memoryLatency) :
+    Controller(sc_module_name name, bool const directMapped, struct Request* requests,
+               size_t const num_requests, unsigned const cacheLines, unsigned const cacheLineSize, unsigned const cacheLatency,
+               unsigned const memoryLatency) :
         sc_module(name),
         DIRECT_MAPPED(directMapped),
+        cycles(0),
+        request_counter(0),
         requests(requests),
         num_requests(num_requests),
-        request_counter(0),
         hit_count(0),
         miss_count(0),
-        cycles(0),
         cacheLines(cacheLines),
         cacheLineSize(cacheLineSize),
         cacheLatency(cacheLatency),
