@@ -14,7 +14,7 @@
 class Controller : public sc_module
 {
 public:
-    sc_in<bool> clk;                   ///< Clock Signal
+    sc_in<bool> clk;                   ///< Clock Signal ✅
 
     sc_signal<bool> we;                ///< Write Enable Signal
     sc_signal<uint32_t> addr;          ///< Address Signal
@@ -54,7 +54,7 @@ public:
     {
         // Defining the process of the Module
         SC_THREAD(controller_process);
-        sensitive << clk.pos();
+        sensitive << clk.pos() << requests_out;
     }
 
 private:

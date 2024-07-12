@@ -22,20 +22,21 @@ public:
     const unsigned OFFSET_BITS = log2(CACHE_LINE_SIZE);    ///< Number of bits for the offset
     const unsigned INDEX_BITS = log2(CACHE_LINES);         ///< Number of bits for the index
     const unsigned TAG_BITS = 32 - OFFSET_BITS - INDEX_BITS; ///< Number of bits for the tag
-
-    sc_in<bool> clk;                                         ///< Clock Signal
-    sc_in<bool> we;                                          ///< Write Enable Signal
-    sc_in<uint32_t> addr;                                    ///< Address Signal
-    sc_in<uint32_t> wdata;                                   ///< Write Data Signal
-
-    sc_out<uint32_t> rdata;                                  ///< Read Data Signal
-    sc_out<bool> hit;                                        ///< Hit Signal
-    sc_out<size_t> cycles_;                                  ///< Number of Cycles needed to complete the operation
-
-    sc_in<uint32_t> memory_rdata;                            ///< Read Data Signal from Memory
-    sc_out<uint32_t> memory_addr;                            ///< Address Signal to Memory
-    sc_out<uint32_t> memory_wdata;                           ///< Write Data Signal to Memory
-    sc_out<bool> memory_we;                                  ///< Write Enable Signal to Memory
+    // Cache Input Signals
+    sc_in<bool> clk;                                         ///< Clock Signal ✅
+    sc_in<bool> we;                                          ///< Write Enable Signal ✅
+    sc_in<uint32_t> addr;                                    ///< Address Signal ✅
+    sc_in<uint32_t> wdata;                                   ///< Write Data Signal ✅
+    // Cache Output Signals
+    sc_out<uint32_t> rdata;                                  ///< Read Data Signal ✅
+    sc_out<bool> hit;                                        ///< Hit Signal ✅
+    sc_out<size_t> cycles_;                                  ///< Number of Cycles needed to complete the operation ✅
+    // Memory Input Signals
+    sc_in<uint32_t> memory_rdata;                            ///< Read Data Signal from Memory ✅
+    // Memory Output Signals
+    sc_out<uint32_t> memory_addr;                            ///< Address Signal to Memory ✅
+    sc_out<uint32_t> memory_wdata;                           ///< Write Data Signal to Memory ✅
+    sc_out<bool> memory_we;                                  ///< Write Enable Signal to Memory ✅
 
     SC_HAS_PROCESS(Cache);                                   ///< Macro for multiple-argument constructor of the Module
 
@@ -65,7 +66,7 @@ public:
         {
             SC_METHOD(process_fully_associative); ///< Else process Fully Associative Cache
         }
-        sensitive << clk.pos() << addr << we << wdata << rdata; ///< Sensitivity List
+        sensitive << clk.pos() << we << addr << wdata; ///< Sensitivity List
 
         // Initialize the Cache
         cache = new CacheLine*[cacheLines];
@@ -83,6 +84,7 @@ public:
         {
             initialize_lru_list();
         }
+
     }
 
 private:

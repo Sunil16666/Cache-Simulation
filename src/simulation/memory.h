@@ -9,11 +9,12 @@
 class Memory : public sc_module
 {
 public:
-    sc_in<bool> clk;        ///< Clock Signal
-    sc_in<bool> we;         ///< Write Enable Signal
-    sc_in<uint32_t> addr;   ///< Address Signal
-    sc_in<uint32_t> wdata;  ///< Write Data Signal
-    sc_out<uint32_t> rdata; ///< Read Data Signal
+    sc_in<bool> clk;        ///< Clock Signal ✅
+    sc_in<bool> we;         ///< Write Enable Signal ✅
+    sc_in<uint32_t> addr;   ///< Address Signal ✅
+    sc_in<uint32_t> wdata;  ///< Write Data Signal ✅
+
+    sc_out<uint32_t> rdata; ///< Read Data Signal ✅
 
     SC_HAS_PROCESS(Memory); ///< Macro for multiple-argument constructor of the Module
 
@@ -25,7 +26,7 @@ public:
     {
         // Defining the process of the Module
         SC_METHOD(process);
-        sensitive << clk.pos();
+        sensitive << clk.pos() << we << addr << wdata;
     }
 
     // Clean up the memory
