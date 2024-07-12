@@ -25,7 +25,7 @@ public:
     Memory(sc_module_name name) : sc_module(name)
     {
         // Defining the process of the Module
-        SC_METHOD(process);
+        SC_THREAD(process);
         sensitive << clk.pos() << we << addr << wdata;
     }
 

@@ -60,11 +60,11 @@ public:
     {
         if (DIRECT_MAPPED)                        ///< If Direct Mapped
         {
-            SC_METHOD(process_direct_mapped);     ///< Process Direct Mapped Cache
+            SC_THREAD(process_direct_mapped);     ///< Process Direct Mapped Cache
         }
         else
         {
-            SC_METHOD(process_fully_associative); ///< Else process Fully Associative Cache
+            SC_THREAD(process_fully_associative); ///< Else process Fully Associative Cache
         }
         sensitive << clk.pos() << we << addr << wdata; ///< Sensitivity List
 
