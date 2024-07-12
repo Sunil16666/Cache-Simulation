@@ -42,7 +42,7 @@ size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned 
  * @param directMapped
  * @return Number of primitive gates
  */
-unsigned muxGateCount(unsigned cacheLines, unsigned indexBits, bool directMapped)
+unsigned muxGateCount(unsigned cacheLines, unsigned indexBits)
 {
     // N = cacheLines | I = indexBits
     unsigned const not_num = indexBits;  ///< Number of NOT gates
@@ -71,7 +71,7 @@ unsigned comparatorGateCount(unsigned tagBits)
  * @param directMapped
  * @return Number of primitive gates
  */
-unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits, bool directMapped)
+unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits)
 {
     // assuming 6T SRAM Cell, and assuming transistors are primitive gates
     unsigned constexpr transistors_per_bit = 6;

@@ -22,7 +22,7 @@ size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned 
  * @param directMapped
  * @return Number of primitive gates
  */
-unsigned muxGateCount(unsigned cacheLines, unsigned indexBits, bool directMapped);
+unsigned muxGateCount(unsigned cacheLines, unsigned indexBits);
 
 /**
  * A helper function prototype to calculate the number of primitive gates required to implement a comparator
@@ -39,7 +39,7 @@ unsigned comparatorGateCount(unsigned tagBits);
  * @param directMapped
  * @return Number of primitive gates
  */
-unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits, bool directMapped);
+unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits);
 
 
 #endif //PRIMITIVEGATECOUNTCALC_H
