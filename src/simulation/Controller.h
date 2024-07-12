@@ -128,7 +128,7 @@ private:
                 requests[request_counter].data = rdata.read();
             }
 
-            cycles++; ///< Increment the number of the total cycles
+            cycles += cycles_per_request.read(); ///< Increment the number of cycles per request
             if (hit.read()) ///< Check for hit or miss
             {
                 hit_count++;
