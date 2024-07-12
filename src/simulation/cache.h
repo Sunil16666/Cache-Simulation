@@ -131,9 +131,9 @@ private:
         {
             wait(clk.posedge_event());
 
-            uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1);                ///< Offset for current request
-            uint32_t index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1); ///< Index for current request
-            uint32_t tag = addr.read() >> (OFFSET_BITS + INDEX_BITS);                ///< Tag for current request
+            uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1);                ///< Offset for current request
+            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1); ///< Index for current request
+            uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS);                ///< Tag for current request
 
             CacheLine* line = cache[index];                     ///< Cache Line for the current request
             size_t cycles = CACHE_LATENCY;                      ///< Add Cache Latency to the total cycles
