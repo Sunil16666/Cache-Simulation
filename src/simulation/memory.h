@@ -27,6 +27,8 @@ public:
         // Defining the process of the Module
         SC_THREAD(process);
         sensitive << clk.pos() << we << addr << wdata;
+
+        initialize();
     }
 
     // Clean up the memory

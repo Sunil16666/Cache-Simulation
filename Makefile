@@ -12,8 +12,8 @@ CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.c
 # Compiler and flags
 CC = gcc
 CXX = g++
-CFLAGS = -std=c17 -Wall -Wextra
-CXXFLAGS = -std=c++14 -Wall -Wextra
+CFLAGS = -std=c17 -Wall -Wextra -g
+CXXFLAGS = -std=c++14 -Wall -Wextra -g
 
 # SystemC path
 INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
@@ -42,7 +42,6 @@ endif
 all: debug
 
 # Debug build
-debug: CXXFLAGS += -g
 debug: $(TARGET)
 
 # Release build

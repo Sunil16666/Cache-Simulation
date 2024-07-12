@@ -70,6 +70,7 @@ public:
 
         // Initialize the Cache
         cache = new CacheLine*[cacheLines];
+        initialize();
     }
 
     // Intialize and clean up the Cache
@@ -77,7 +78,6 @@ public:
     {
         for (unsigned i = 0; i < CACHE_LINES; i++)
         {
-            delete cache[i];
             cache[i] = new CacheLine(CACHE_LINE_SIZE);
         }
         if (!DIRECT_MAPPED)
