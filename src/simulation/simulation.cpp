@@ -32,7 +32,6 @@ struct Result run_simulation(
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal
-    sc_signal<bool> hit;                                  ///< Hit signal
     sc_signal<size_t> cycles_;                            ///< Cycles signal
     sc_signal<size_t> total_hits;                         ///< Total Hits signal
     sc_signal<size_t> total_misses;                       ///< Total Misses signal
