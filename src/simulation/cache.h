@@ -75,7 +75,7 @@ public:
     // Intialize and clean up the Cache
     void initialize()
     {
-        for (int i = 0; i < CACHE_LINES; i++)
+        for (unsigned i = 0; i < CACHE_LINES; i++)
         {
             delete cache[i];
             cache[i] = new CacheLine(CACHE_LINE_SIZE);

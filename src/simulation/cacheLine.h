@@ -21,7 +21,7 @@ struct CacheLine
         tag = 0;
 
         // Default valid-flag is false
-        for (int i = 0; i < size; i++)
+        for (unsigned i = 0; i < size; i++)
         {
             valid[i] = false;
         }
