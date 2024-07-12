@@ -120,9 +120,6 @@ private:
             addr.write(request.addr);
             data.write(request.data);
             we.write(request.we);
-            cache->addr(addr); ///< Write the address to the Cache
-            cache->wdata(data); ///< Write the data to the Cache
-            cache->we(we); ///< Write the we-signal to the Cache
 
             // Wait for the Cache to process the request (one cycle)
             wait(clk.posedge_event());
