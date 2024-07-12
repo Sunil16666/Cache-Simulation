@@ -37,13 +37,10 @@ struct Result run_simulation(
     sc_signal<size_t> total_misses;                       ///< Total Misses signal
     sc_signal<size_t> primitiveGateCount;                 ///< Primitive Gate Count signal
     sc_signal<Request*> requests_out;                     ///< Requests Feedback signal
-    sc_signal<bool> we;                                   ///< Write Enable signa
-    sc_signal<uint32_t> addr;                             ///< Address signal
-    sc_signal<uint32_t> memory_rdata;                     ///< Memory Read-Data signal
-    sc_signal<uint32_t> memory_wdata;                     ///< Memory Write-Data signal
 
-    // Create instances of Cache, Memory and Controller
+    // Create instance of the Controller and Result
     Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency, memoryLatency);
+    Result result{};
 
     controller.clk(clk);
     controller.total_hits(total_hits);
@@ -55,17 +52,19 @@ struct Result run_simulation(
     // Start the simulation
     sc_start(cycles, SC_NS);
 
+    if (controller.cycles >= cycles && controller.request_counter < num_Requests)
+    {
+        result.cycles = SIZE_MAX;
+        sc_stop();
+    }
 
     // Get the results
-    Result result = {
+    result = {
         cycles_.read(),
         total_hits.read(),
         total_misses.read(),
         primitiveGateCount.read()
     };
-
-    sc_stop();
-
 
     // Handle tracefile if needed
     if (tracefile)

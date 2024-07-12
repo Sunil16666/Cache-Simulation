@@ -34,6 +34,8 @@ public:
     sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal
 
     const bool DIRECT_MAPPED; ///< boolean flag for cache mapping
+    size_t cycles; ///< Number of Cycles
+    size_t request_counter; ///< Request Counter
 
     SC_HAS_PROCESS(Controller); ///< Macro for multiple-argument constructor of the Module
 
@@ -104,10 +106,8 @@ private:
     struct Request* requests; ///< Array of Requests
 
     size_t num_requests; ///< Number of Requests
-    size_t request_counter; ///< Request Counter
     size_t hit_count; ///< Hit Counter
     size_t miss_count; ///< Miss Counter
-    size_t cycles; ///< Number of Cycles
 
     unsigned cacheLines; ///< Number of Cache Lines
     unsigned cacheLineSize; ///< Size of Cache Line
