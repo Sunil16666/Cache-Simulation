@@ -61,11 +61,7 @@ public:
         requests(requests),
         num_requests(num_requests),
         hit_count(0),
-        miss_count(0),
-        cacheLines(cacheLines),
-        cacheLineSize(cacheLineSize),
-        cacheLatency(cacheLatency),
-        memoryLatency(memoryLatency)
+        miss_count(0)
     {
         // Defining the process of the Module
         SC_THREAD(controller_process);
@@ -111,11 +107,6 @@ private:
     size_t num_requests; ///< Number of Requests
     size_t hit_count; ///< Hit Counter
     size_t miss_count; ///< Miss Counter
-
-    unsigned cacheLines; ///< Number of Cache Lines
-    unsigned cacheLineSize; ///< Size of Cache Line
-    unsigned cacheLatency; ///< Latency of the Cache
-    unsigned memoryLatency; ///< Latency of the Memory
 
     /**
      * Process of the Controller Module that orchestrates the Cache and Memory Modules
