@@ -19,12 +19,15 @@ public:
     sc_signal<bool> we;                ///< Write Enable Signal
     sc_signal<uint32_t> addr;          ///< Address Signal
     sc_signal<uint32_t> data;          ///< Data Signal
+    sc_signal<bool> hit;               ///< Hit Signal
+    sc_signal<size_t> cycles_per_request; ///< Cycles per Request Signal
+    sc_signal<uint32_t> rdata;         ///< Read Data Signal
 
-    sc_out<Request*> requests_out;     ///< Requests Feedback Signal
-    sc_out<size_t> total_hits;         ///< Total Hits Signal
-    sc_out<size_t> total_misses;       ///< Total Misses Signal
-    sc_out<size_t> cycles_;            ///< Cycles Signal
-    sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal
+    sc_out<Request*> requests_out;     ///< Requests Feedback Signal ✅
+    sc_out<size_t> total_hits;         ///< Total Hits Signal ✅
+    sc_out<size_t> total_misses;       ///< Total Misses Signal ✅
+    sc_out<size_t> cycles_;            ///< Cycles Signal ✅
+    sc_out<size_t> primitiveGateCount; ///< Primitive Gate Count Signal ✅
 
     const bool DIRECT_MAPPED;          ///< boolean flag for cache mapping
 
@@ -39,12 +42,11 @@ public:
      * @param requests
      * @param num_requests
      */
-    Controller(sc_module_name name, Cache* cache, Memory* memory, bool directMapped, struct Request* requests,
+    Controller(sc_module_name name, Cache* cache, bool directMapped, struct Request* requests,
                size_t num_requests) :
         sc_module(name),
         DIRECT_MAPPED(directMapped),
         cache(cache),
-        memory(memory),
         requests(requests),
         num_requests(num_requests),
         request_counter(0),
@@ -54,12 +56,17 @@ public:
     {
         // Defining the process of the Module
         SC_THREAD(controller_process);
+
+        // Drive the signals
+        cache->hit(hit);                         //< Get the hit signal from the Cache
+        cache->cycles_total(cycles_per_request); //< Get the cycles per request signal from the Cache
+        cache->rdata(rdata);                     //< Get the read data signal from the Cache
+
         sensitive << clk.pos() << requests_out;
     }
 
 private:
     Cache* cache;             ///< Cache Module
-    Memory* memory;           ///< Memory Module
     struct Request* requests; ///< Array of Requests
     size_t num_requests;      ///< Number of Requests
     size_t request_counter;   ///< Request Counter
@@ -87,11 +94,11 @@ private:
             wait(clk.posedge_event());
             if (!request.we)
             {
-                requests[request_counter].data = cache->rdata.read();
+                requests[request_counter].data = rdata.read();
             }
 
             cycles++;                                                  ///< Increment the number of the total cycles
-            if (cache->hit.read())                                     ///< Check for hit or miss
+            if (hit.read())                                                 ///< Check for hit or miss
             {
                 hit_count++;
             }

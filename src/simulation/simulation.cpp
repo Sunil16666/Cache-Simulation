@@ -37,19 +37,30 @@ struct Result run_simulation(
     sc_signal<size_t> total_misses;                       ///< Total Misses signal
     sc_signal<size_t> primitiveGateCount;                 ///< Primitive Gate Count signal
     sc_signal<Request*> requests_out;                     ///< Requests Feedback signal
-    sc_signal<uint32_t> memory_data;                      ///< Memory Data signal
+    sc_signal<bool> we;                                   ///< Write Enable signal
+    sc_signal<uint32_t> addr;                             ///< Address signal
+    sc_signal<uint32_t> wdata;                            ///< Write-Data signal
+    sc_signal<uint32_t> rdata;                            ///< Read-Data signal
+    sc_signal<uint32_t> memory_rdata;                     ///< Memory Read-Data signal
+    sc_signal<uint32_t> memory_wdata;                     ///< Memory Write-Data signal
 
     // Create instances of Cache, Memory and Controller
     Cache cache("cache", cacheLines, CacheLineSize, cacheLatency, memoryLatency, directMapped);
     Memory memory("memory");
-    Controller controller("controller", &cache, &memory, directMapped, requests, num_Requests);
+    Controller controller("controller", &cache, directMapped, requests, num_Requests);
 
     // TODO: Connect signals properly
     cache.clk(clk);
-    cache.memory_rdata(memory_data);
+    cache.memory_rdata(memory_rdata);
+    cache.memory_wdata(memory_wdata);
+    cache.memory_we(we);
+    cache.addr(addr);
 
     memory.clk(clk);
-    memory.rdata(memory_data);
+    memory.rdata(memory_rdata);
+    memory.wdata(memory_wdata);
+    memory.we(we);
+    memory.addr(addr);
 
     controller.clk(clk);
     controller.total_hits(total_hits);

@@ -28,9 +28,9 @@ public:
     sc_in<uint32_t> addr;                                    ///< Address Signal ✅
     sc_in<uint32_t> wdata;                                   ///< Write Data Signal ✅
     // Cache Output Signals
-    sc_out<uint32_t> rdata;                                  ///< Read Data Signal ✅
+    sc_out<uint32_t> rdata;                                  ///< Read Data Signal
     sc_out<bool> hit;                                        ///< Hit Signal ✅
-    sc_out<size_t> cycles_;                                  ///< Number of Cycles needed to complete the operation ✅
+    sc_out<size_t> cycles_total;                             ///< Number of Cycles needed to complete the operation ✅
     // Memory Input Signals
     sc_in<uint32_t> memory_rdata;                            ///< Read Data Signal from Memory ✅
     // Memory Output Signals
@@ -177,7 +177,7 @@ private:
                     line->data[offset] = memory_data;           ///< Write the data to the cache
                 }
             }
-            cycles_.write(cycles);                              ///< Write the total cycles to the cycles signal
+            cycles_total.write(cycles);                              ///< Write the total cycles to the cycles signal
         }
     }
 
@@ -250,7 +250,7 @@ private:
                     update_lru(lru_pointer);                         ///< Update the LRU list
                 }
             }
-            cycles_.write(cycles);                                   ///< Write the total cycles to the cycles signal
+            cycles_total.write(cycles);                                   ///< Write the total cycles to the cycles signal
         }
     }
 };
