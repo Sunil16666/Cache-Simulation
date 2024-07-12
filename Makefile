@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS = src/frontend/file_processing.c src/frontend/parser.c src/frontend/main.c
-CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/simulation/sc_main.cpp
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/sc_main.cpp
 
 # Compiler and flags
 CC = gcc
