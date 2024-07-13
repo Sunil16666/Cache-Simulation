@@ -99,6 +99,26 @@ public:
         delete memory;
     }
 
+    void trace_signals(sc_trace_file* trace_file)
+    {
+        sc_trace(trace_file, clk, "clk");
+        sc_trace(trace_file, we, "we");
+        sc_trace(trace_file, addr, "addr");
+        sc_trace(trace_file, data, "data");
+        sc_trace(trace_file, hit, "hit");
+        sc_trace(trace_file, cycles_per_request, "cycles_per_request");
+        sc_trace(trace_file, rdata, "rdata");
+        sc_trace(trace_file, memory_rdata, "memory_rdata");
+        sc_trace(trace_file, memory_wdata, "memory_wdata");
+        sc_trace(trace_file, memory_addr, "memory_addr");
+        sc_trace(trace_file, memory_we, "memory_we");
+        sc_trace(trace_file, requests_out, "requests_out");
+        sc_trace(trace_file, total_hits, "total_hits");
+        sc_trace(trace_file, total_misses, "total_misses");
+        sc_trace(trace_file, cycles_, "cycles");
+        sc_trace(trace_file, primitiveGateCount, "primitiveGateCount");
+    }
+
 private:
     Cache* cache; ///< Cache Module
     Memory* memory; ///< Memory Module

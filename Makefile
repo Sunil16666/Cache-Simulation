@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS = src/frontend/file_processing.c src/frontend/parser.c src/frontend/main.c
-CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/sc_main.cpp
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/sc_main.cpp src/testing/expectedResult.cpp
 
 # Compiler and flags
 CC = gcc
@@ -16,7 +16,7 @@ CFLAGS = -std=c17 -Wall -Wextra -g
 CXXFLAGS = -std=c++14 -Wall -Wextra -g
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
+INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend -Isrc/testing
 LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name

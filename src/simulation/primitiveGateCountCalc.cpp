@@ -39,7 +39,6 @@ size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned 
  * A helper function to calculate the number of primitive gates required to implement a multiplexer
  * @param cacheLines
  * @param indexBits
- * @param directMapped
  * @return Number of primitive gates
  */
 unsigned muxGateCount(unsigned cacheLines, unsigned indexBits)
@@ -68,7 +67,6 @@ unsigned comparatorGateCount(unsigned tagBits)
  * @param CacheLineSize
  * @param cacheLines
  * @param tagBits
- * @param directMapped
  * @return Number of primitive gates
  */
 unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits)

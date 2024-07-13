@@ -84,7 +84,6 @@ public:
         {
             initialize_lru_list();
         }
-
     }
 
 private:
@@ -129,6 +128,7 @@ private:
     {
         while (true)
         {
+            std::printf("Process Direct Mapped\n");
             wait(clk.posedge_event());
 
             uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1);                ///< Offset for current request
@@ -188,6 +188,7 @@ private:
     {
         while (true)
         {
+            std::printf("Process Fully Associative\n");
             wait(clk.posedge_event());
 
             uint32_t offset = addr.read() & (1 << OFFSET_BITS) - 1; ///< Offset for current request
@@ -200,6 +201,8 @@ private:
                     return line->tag == tag && line->valid[offset];
                 });
 
+            std::printf("Line Pointer: %p\n", linePointer);
+
             // Get the index of the line in the cache and add the cache latency to the total cycles
             int lineIndex = linePointer != cache + CACHE_LINES ? linePointer - cache : -1;
             size_t cycles = CACHE_LATENCY;
@@ -210,6 +213,7 @@ private:
                 if (we.read())                                       ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY;
+                    wait(MEMORY_LATENCY);
                     cache[lineIndex]->data[offset] = wdata.read();   ///< Write the data to the cache
                     cache[lineIndex]->valid[offset] = true;          ///< Set the valid bit
                     memory_addr.write(addr.read());            ///< Address to memory
@@ -225,6 +229,7 @@ private:
             {
                 hit.write(false);                              ///< Cache miss
                 uint32_t lru_pointer = get_lru_index();              ///< Get the LRU index
+                std::printf("LRU Pointer: %d\n", lru_pointer);
                 if (we.read())                                       ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY;                        ///< Add Memory Latency to the total cycles
