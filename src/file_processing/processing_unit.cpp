@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <vector>
+#include <src/simulation/simulation.h>
 
 ProcessingUnit::ProcessingUnit(const std::string& csvFilePath) : csvFilePath(csvFilePath) {}
 

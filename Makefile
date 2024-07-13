@@ -6,21 +6,21 @@
 # ---------------------------------------
 
 # Entry point for the program
-C_SRCS =
-CPP_SRCS =  src/primitiveGateCountCalc.cpp src/simulation.cpp src/testBench.cpp
+C_SRCS = src/frontend/file_processing.c src/frontend/parser.c src/frontend/main.c
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/sc_main.cpp src/testing/expectedResult.cpp
 
 # Compiler and flags
 CC = gcc
 CXX = g++
-CFLAGS = -std=c17 -Wall -Wextra
-CXXFLAGS = -std=c++14 -Wall -Wextra
+CFLAGS = -std=c17 -Wall -Wextra -g
+CXXFLAGS = -std=c++14 -Wall -Wextra -g
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC_HOME)/include
+INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend -Isrc/testing
 LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
 
 # Executable name
-TARGET = simulation
+TARGET = sc_main
 
 C_OBJS = $(C_SRCS:.c=.o)
 CPP_OBJS = $(CPP_SRCS:.cpp=.o)
@@ -35,14 +35,13 @@ endif
 # Add rpath except for MacOS
 UNAME_S := $(shell uname -s)
 ifneq ($(UNAME_S), Darwin)
-    LDFLAGS += -Wl,-rpath=$(SYSC_PATH)/lib
+    LDFLAGS += -Wl,-rpath=$(SYSTEMC_HOME)/lib
 endif
 
 # usage: make / make all
 all: debug
 
 # Debug build
-debug: CXXFLAGS += -g
 debug: $(TARGET)
 
 # Release build

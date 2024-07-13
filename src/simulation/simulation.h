@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <systemc>
 
 /**
  * Function prototype (Decleration) of running the SystemC Cache Simulation
@@ -48,5 +49,7 @@ struct Result
     size_t hits; ///< Number of total hits occured during the simulation
     size_t primitiveGateCount; ///< Number of primitive Gates needed to realize such Cache
 };
+
+extern sc_core::sc_trace_file* trace; // TODO: Implement this
 
 #endif //SIMULATION_H
