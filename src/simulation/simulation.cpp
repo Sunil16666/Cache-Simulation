@@ -2,9 +2,7 @@
 
 #include <systemc.h>
 
-#include "cache.h"
 #include "Controller.h"
-#include "memory.h"
 
 
 /**
@@ -49,27 +47,39 @@ struct Result run_simulation(
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
 
-    // Start the simulation
-    sc_start(cycles, SC_NS);
-
-    if (controller.cycles >= cycles && controller.request_counter < num_Requests)
-    {
-        result.cycles = SIZE_MAX;
-        sc_stop();
-    }
-
-    // Get the results
-    result = {
-        cycles_.read(),
-        total_hits.read(),
-        total_misses.read(),
-        primitiveGateCount.read()
-    };
-
-    // Handle tracefile if needed
+    sc_trace_file *trace = nullptr;
     if (tracefile)
     {
-        // TODO: Implement tracefile handling
+        trace = sc_create_vcd_trace_file(tracefile);
+        controller.trace_signals(trace);
+    }
+
+    // Start the simulation and run for the specified number of cycles or until all requests are processed
+    sc_start(cycles, SC_NS);
+
+    if (cycles_.read() < cycles && controller.request_counter < num_Requests)
+    {
+        std::printf("Simulation did not run for the specified number of cycles\n");
+        result = {
+            SIZE_MAX,
+            total_hits.read(),
+            total_misses.read(),
+            primitiveGateCount.read()
+        };
+    }
+    else
+    {
+        result = {
+            cycles_.read(),
+            total_hits.read(),
+            total_misses.read(),
+            primitiveGateCount.read()
+        };
+    }
+
+    if (trace)
+    {
+        sc_close_vcd_trace_file(trace);
     }
 
     // Return the results of the simulation
