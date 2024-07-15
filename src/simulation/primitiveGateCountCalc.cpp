@@ -15,8 +15,8 @@
  *  - Transistors are considered to be primitive gates
  *  - "More than Two-Inputs" gates are assumed to be still primitive gates
  */
-size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned tagBits, unsigned indexBits,
-                          bool directMapped)
+size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSize, unsigned const tagBits, unsigned const indexBits,
+                          bool const directMapped)
 {
     // Calculate the number of gates required to realize a multiplexer, comparator, and storage cells
     unsigned const muxGateCount = tagBits * ::muxGateCount(cacheLines, indexBits);
@@ -41,7 +41,7 @@ size_t primitiveGateCount(unsigned cacheLines, unsigned CacheLineSize, unsigned 
  * @param indexBits
  * @return Number of primitive gates
  */
-unsigned muxGateCount(unsigned cacheLines, unsigned indexBits)
+unsigned muxGateCount(unsigned const cacheLines, unsigned const indexBits)
 {
     // N = cacheLines | I = indexBits
     unsigned const not_num = indexBits;  ///< Number of NOT gates
@@ -55,7 +55,7 @@ unsigned muxGateCount(unsigned cacheLines, unsigned indexBits)
  * @param tagBits
  * @return Number of primitive gates
  */
-unsigned comparatorGateCount(unsigned tagBits)
+unsigned comparatorGateCount(unsigned const tagBits)
 {
     unsigned const xor_num = 1 * tagBits; ///< Number of XOR gates
     unsigned constexpr and_num = 1;       ///< xor_num Inputs | Number of AND gates
@@ -69,7 +69,7 @@ unsigned comparatorGateCount(unsigned tagBits)
  * @param tagBits
  * @return Number of primitive gates
  */
-unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits)
+unsigned storageGateCount(unsigned const CacheLineSize, unsigned const cacheLines, unsigned const tagBits)
 {
     // assuming 6T SRAM Cell, and assuming transistors are primitive gates
     unsigned constexpr transistors_per_bit = 6;

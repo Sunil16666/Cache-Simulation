@@ -6,7 +6,7 @@
 /**
  * Memory Module for the Simulation
  */
-class Memory : public sc_module
+class Memory final : public sc_module
 {
 public:
     sc_in<bool> clk;        ///< Clock Signal
@@ -40,14 +40,14 @@ public:
 private:
     std::map<uint32_t, uint32_t> memory;     ///< Memory Map (Address, Data)
 
-    void write(uint32_t addr, uint32_t data) ///< Write to the Memory
+    void write(const uint32_t addr, const uint32_t data) ///< Write to the Memory
     {
         memory[addr] = data;
     }
 
-    void read(uint32_t addr)                 ///< Read from the Memory
+    void read(const uint32_t addr)                 ///< Read from the Memory
     {
-        auto it = memory.find(addr);         ///< Find the address in the memory
+        const auto it = memory.find(addr);         ///< Find the address in the memory
         if (it != memory.end())              ///< If found
         {
             rdata.write(it->second);         ///< Write the data to the read data signal
