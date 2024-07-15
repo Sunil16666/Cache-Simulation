@@ -1,8 +1,10 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <cstddef>
-#include <cstdint>
+
+
+#include <stddef.h>
+#include <stdint.h>
 #include <systemc>
 
 /**
@@ -18,7 +20,7 @@
  * @param tracefile
  * @return Result
  */
-struct Result run_simulation(
+extern "C" struct Result run_simulation(
     int cycles,
     int directMapped,
     unsigned cacheLines,
@@ -26,7 +28,7 @@ struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request requests[num_Requests],
+    struct Request* requests,
     const char* tracefile);
 
 /**
@@ -53,3 +55,4 @@ struct Result
 extern sc_core::sc_trace_file* trace; // TODO: Implement this
 
 #endif //SIMULATION_H
+

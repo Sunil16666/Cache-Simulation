@@ -191,7 +191,7 @@ private:
             std::printf("Process Fully Associative\n");
             wait(clk.posedge_event());
 
-            uint32_t offset = addr.read() & (1 << OFFSET_BITS) - 1; ///< Offset for current request
+            uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
             uint32_t tag = addr.read() >> OFFSET_BITS;              ///< Tag for current request
 
             // Find the line in the cache that contains the tag and the offset
