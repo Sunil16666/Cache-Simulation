@@ -55,4 +55,3 @@ struct Result
 extern sc_core::sc_trace_file* trace; // TODO: Implement this
 
 #endif //SIMULATION_H
-

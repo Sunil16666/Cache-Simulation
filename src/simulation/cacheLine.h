@@ -13,7 +13,7 @@ struct CacheLine
     /**
      * explicit Constructor, no implicit conversion allowed
      */
-    explicit CacheLine(unsigned size)
+    explicit CacheLine(unsigned const size)
     {
         // Allocate memory for the data and valid arrays
         data = new uint32_t[size];

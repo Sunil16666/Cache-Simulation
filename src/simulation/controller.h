@@ -11,7 +11,7 @@
 /**
  * Controller Module of the Cache Simulation
  */
-class Controller : public sc_module
+class Controller final : public sc_module
 {
 public:
     sc_in<bool> clk; ///< Clock Signal
@@ -51,9 +51,9 @@ public:
      * @param cacheLatency
      * @param memoryLatency
      */
-    Controller(sc_module_name name, bool const directMapped, struct Request* requests,
-               size_t const num_requests, unsigned const cacheLines, unsigned const cacheLineSize, unsigned const cacheLatency,
-               unsigned const memoryLatency) :
+    Controller(sc_module_name name, const bool directMapped, struct Request* requests,
+               const size_t num_requests, const unsigned cacheLines, const unsigned cacheLineSize, const unsigned cacheLatency,
+               const unsigned memoryLatency) :
         sc_module(name),
         DIRECT_MAPPED(directMapped),
         cycles(0),
@@ -93,13 +93,13 @@ public:
     }
 
     // destructor
-    ~Controller()
+    ~Controller() override
     {
         delete cache;
         delete memory;
     }
 
-    void trace_signals(sc_trace_file* trace_file)
+    void trace_signals(sc_trace_file* trace_file) const
     {
         sc_trace(trace_file, clk, "clk");
         sc_trace(trace_file, we, "we");

@@ -11,7 +11,7 @@
 /**
  * Cache Module of the Simulation
  */
-class Cache : public sc_module
+class Cache final : public sc_module
 {
 public:
     const unsigned CACHE_LINES;                              ///< Number of Cache Lines
@@ -49,8 +49,8 @@ public:
      * @param memoryLatency
      * @param directMapped
      */
-    Cache(sc_module_name name, unsigned cacheLines, unsigned cacheLineSize, unsigned cacheLatency,
-          unsigned memoryLatency, bool directMapped) :
+    Cache(sc_module_name name, const unsigned cacheLines, const unsigned cacheLineSize, const unsigned cacheLatency,
+          const unsigned memoryLatency, const bool directMapped) :
         sc_module(name),
         CACHE_LINES(cacheLines),
         CACHE_LINE_SIZE(cacheLineSize),
@@ -116,7 +116,7 @@ private:
      * Get the Least Recently Used Index
      * @return lru index
      */
-    unsigned get_lru_index()
+    unsigned get_lru_index() const
     {
         return lru_list.front();
     }
@@ -228,7 +228,7 @@ private:
             else
             {
                 hit.write(false);                              ///< Cache miss
-                uint32_t lru_pointer = get_lru_index();              ///< Get the LRU index
+                const uint32_t lru_pointer = get_lru_index();              ///< Get the LRU index
                 std::printf("LRU Pointer: %d\n", lru_pointer);
                 if (we.read())                                       ///< Write to cache
                 {
