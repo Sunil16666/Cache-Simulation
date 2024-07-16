@@ -2,7 +2,6 @@
 #define SIMULATION_H
 
 
-
 #include <stddef.h>
 #include <stdint.h>
 #include <systemc>

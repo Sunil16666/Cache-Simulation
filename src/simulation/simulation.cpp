@@ -30,14 +30,15 @@ struct Result run_simulation(
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal
-    sc_signal<size_t> cycles_;                            ///< Cycles signal
-    sc_signal<size_t> total_hits;                         ///< Total Hits signal
-    sc_signal<size_t> total_misses;                       ///< Total Misses signal
-    sc_signal<size_t> primitiveGateCount;                 ///< Primitive Gate Count signal
-    sc_signal<Request*> requests_out;                     ///< Requests Feedback signal
+    sc_signal<size_t> cycles_; ///< Cycles signal
+    sc_signal<size_t> total_hits; ///< Total Hits signal
+    sc_signal<size_t> total_misses; ///< Total Misses signal
+    sc_signal<size_t> primitiveGateCount; ///< Primitive Gate Count signal
+    sc_signal<Request*> requests_out; ///< Requests Feedback signal
 
     // Create instance of the Controller and Result
-    Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency, memoryLatency);
+    Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency,
+                          memoryLatency);
     Result result{};
 
     controller.clk(clk);
@@ -47,7 +48,7 @@ struct Result run_simulation(
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
 
-    sc_trace_file *trace = nullptr;
+    sc_trace_file* trace = nullptr;
     if (tracefile)
     {
         trace = sc_create_vcd_trace_file(tracefile);

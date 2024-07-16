@@ -10,6 +10,7 @@ struct Request
     uint32_t data; ///< Requested Data
     int we; ///< WriteEnabled (true or false)
 };
+
 struct Result
 {
     size_t cycles; ///< Number of cycles needed to complete the simulation
@@ -30,7 +31,7 @@ extern struct Result run_simulation(
     const char* tracefile);
 
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     // Default values for simulation parameters
     int cycles = 100;
@@ -58,85 +59,96 @@ int main(int argc, char *argv[])
     int option_index = 0;
     int opt;
 
-    while ((opt = getopt_long(argc, argv, "abc:d:e:f:g:i:h", long_options, &option_index)) != -1) {
-    switch (opt) {
-    case 'a': //--directmapped
-        {printf("directmapped\n");
-        directMapped = 1;
-        break;}
-    case 'b': //--fullassociative
-        {printf("fullassociative\n");
-        fullassociative = 1;
-        break;}
-    case 'c': //--cycles <number> / -c <number>
-        {printf("cycles %s\n", optarg);
-        cycles = atoi(optarg);
-        break;}
-    case 'd': //--cacheline-size <number>
-        {printf("cacheline-size %s", optarg);
-        cacheLineSize = atoi(optarg);
-        break;}
-    case 'e': //--cachelines <number>
+    while ((opt = getopt_long(argc, argv, "abc:d:e:f:g:i:h", long_options, &option_index)) != -1)
+    {
+        switch (opt)
         {
-        cacheLines = atoi(optarg);
-        break;}
-    case 'f': //--cache-latency <number>
-        {
-        cacheLatency = atoi(optarg);
-        break;}
-    case 'g': //--memory-lateny <number>
-        {
-        memoryLatency = atoi(optarg);
-        break;
-        }
-    case 'h': //--help / -h
-        {
-        fprintf(stderr, "Usage: %s [options]\n", argv[0]);
-        fprintf(stderr, "  -c, --cycles <number>       Set the number of cycles for the simulation\n");
-        fprintf(stderr, "  -a, --directmapped          Set cache mapping to direct mapped\n");
-        fprintf(stderr, "  -b, --fullassociative       Set cache mapping to fully associative\n");
-        fprintf(stderr, "  -d, --cacheline-size <size> Set the cache line size\n");
-        fprintf(stderr, "  -e, --cachelines <number>   Set the number of cache lines\n");
-        fprintf(stderr, "  -f, --cache-latency <latency> Set the cache latency\n");
-        fprintf(stderr, "  -g, --memory-latency <latency> Set the memory latency\n");
-        fprintf(stderr, "  -i, --tf=<filename>         Set the trace file name\n");
-        fprintf(stderr, "  -h, --help                  Display this help and exit\n");
-        return 0;
-        }
-    case 'i': //--tf=<filename>
-        {
-        tracefile = optarg;
-        break;
+        case 'a': //--directmapped
+            {
+                printf("directmapped\n");
+                directMapped = 1;
+                break;
             }
-    default:
-        fprintf(stderr, "Unknown option: %s\n", argv[optind-1]);
-        fprintf(stderr, "Use -h or --help for displaying valid options.\n");
-        return 1;
+        case 'b': //--fullassociative
+            {
+                printf("fullassociative\n");
+                fullassociative = 1;
+                break;
+            }
+        case 'c': //--cycles <number> / -c <number>
+            {
+                printf("cycles %s\n", optarg);
+                cycles = atoi(optarg);
+                break;
+            }
+        case 'd': //--cacheline-size <number>
+            {
+                printf("cacheline-size %s", optarg);
+                cacheLineSize = atoi(optarg);
+                break;
+            }
+        case 'e': //--cachelines <number>
+            {
+                cacheLines = atoi(optarg);
+                break;
+            }
+        case 'f': //--cache-latency <number>
+            {
+                cacheLatency = atoi(optarg);
+                break;
+            }
+        case 'g': //--memory-lateny <number>
+            {
+                memoryLatency = atoi(optarg);
+                break;
+            }
+        case 'h': //--help / -h
+            {
+                fprintf(stderr, "Usage: %s [options]\n", argv[0]);
+                fprintf(stderr, "  -c, --cycles <number>       Set the number of cycles for the simulation\n");
+                fprintf(stderr, "  -a, --directmapped          Set cache mapping to direct mapped\n");
+                fprintf(stderr, "  -b, --fullassociative       Set cache mapping to fully associative\n");
+                fprintf(stderr, "  -d, --cacheline-size <size> Set the cache line size\n");
+                fprintf(stderr, "  -e, --cachelines <number>   Set the number of cache lines\n");
+                fprintf(stderr, "  -f, --cache-latency <latency> Set the cache latency\n");
+                fprintf(stderr, "  -g, --memory-latency <latency> Set the memory latency\n");
+                fprintf(stderr, "  -i, --tf=<filename>         Set the trace file name\n");
+                fprintf(stderr, "  -h, --help                  Display this help and exit\n");
+                return 0;
+            }
+        case 'i': //--tf=<filename>
+            {
+                tracefile = optarg;
+                break;
+            }
+        default:
+            fprintf(stderr, "Unknown option: %s\n", argv[optind - 1]);
+            fprintf(stderr, "Use -h or --help for displaying valid options.\n");
+            return 1;
         }
     }
 
 
-
-// Example memory requests
-struct Request requests[] = {
+    // Example memory requests
+    struct Request requests[] = {
         {0x0040, 0x1, 1},
         {0x00A0, 0x2, 0}
-};
-size_t num_Requests = sizeof(requests) / sizeof(requests[0]);
+    };
+    size_t num_Requests = sizeof(requests) / sizeof(requests[0]);
 
-// Run the simulation
-struct Result result = run_simulation(
+    // Run the simulation
+    struct Result result = run_simulation(
         cycles, directMapped, cacheLines, cacheLineSize,
         cacheLatency, memoryLatency, num_Requests,
         requests, tracefile
     );
 
-// Output results
-printf("Simulation Results:\n");
-printf("Cycles: %zu\n", result.cycles);
-printf("Misses: %zu\n", result.misses);
-printf("Hits: %zu\n", result.hits);
-printf("Primitive Gate Count: %zu\n", result.primitiveGateCount);
+    // Output results
+    printf("Simulation Results:\n");
+    printf("Cycles: %zu\n", result.cycles);
+    printf("Misses: %zu\n", result.misses);
+    printf("Hits: %zu\n", result.hits);
+    printf("Primitive Gate Count: %zu\n", result.primitiveGateCount);
 
-return 0;
+    return 0;
 }

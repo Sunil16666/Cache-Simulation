@@ -4,13 +4,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct {
+typedef struct
+{
     uint32_t addr;
     uint32_t data;
     int we;
 } Request;
 
-typedef struct {
+typedef struct
+{
     char* csvFilePath;
 } FileProcessing;
 

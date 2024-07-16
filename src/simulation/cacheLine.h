@@ -7,8 +7,8 @@
 struct CacheLine
 {
     uint32_t* data; ///< Data stored in the cache line
-    bool* valid;    ///< Valid flag for each data element
-    uint32_t tag;   ///< Tag of the cache line
+    bool* valid; ///< Valid flag for each data element
+    uint32_t tag; ///< Tag of the cache line
 
     /**
      * explicit Constructor, no implicit conversion allowed

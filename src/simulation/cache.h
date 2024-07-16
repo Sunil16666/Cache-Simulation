@@ -14,31 +14,31 @@
 class Cache final : public sc_module
 {
 public:
-    const unsigned CACHE_LINES;                              ///< Number of Cache Lines
-    const unsigned CACHE_LINE_SIZE;                          ///< Size of a Cache Line
-    const unsigned CACHE_LATENCY;                            ///< Latency of the Cache in Cycles
-    const unsigned MEMORY_LATENCY;                           ///< Latency of the Memory in Cycles
-    const bool DIRECT_MAPPED;                                ///< boolean flag for cache mapping
-    const unsigned OFFSET_BITS = log2(CACHE_LINE_SIZE);    ///< Number of bits for the offset
-    const unsigned INDEX_BITS = log2(CACHE_LINES);         ///< Number of bits for the index
+    const unsigned CACHE_LINES; ///< Number of Cache Lines
+    const unsigned CACHE_LINE_SIZE; ///< Size of a Cache Line
+    const unsigned CACHE_LATENCY; ///< Latency of the Cache in Cycles
+    const unsigned MEMORY_LATENCY; ///< Latency of the Memory in Cycles
+    const bool DIRECT_MAPPED; ///< boolean flag for cache mapping
+    const unsigned OFFSET_BITS = log2(CACHE_LINE_SIZE); ///< Number of bits for the offset
+    const unsigned INDEX_BITS = log2(CACHE_LINES); ///< Number of bits for the index
     const unsigned TAG_BITS = 32 - OFFSET_BITS - INDEX_BITS; ///< Number of bits for the tag
     // Cache Input Signals
-    sc_in<bool> clk;                                         ///< Clock Signal ✅
-    sc_in<bool> we;                                          ///< Write Enable Signal
-    sc_in<uint32_t> addr;                                    ///< Address Signal
-    sc_in<uint32_t> wdata;                                   ///< Write Data Signal
+    sc_in<bool> clk; ///< Clock Signal ✅
+    sc_in<bool> we; ///< Write Enable Signal
+    sc_in<uint32_t> addr; ///< Address Signal
+    sc_in<uint32_t> wdata; ///< Write Data Signal
     // Cache Output Signals
-    sc_out<uint32_t> rdata;                                  ///< Read Data Signaln ✅
-    sc_out<bool> hit;                                        ///< Hit Signal ✅
-    sc_out<size_t> cycles_total;                             ///< Number of Cycles needed to complete the operation ✅
+    sc_out<uint32_t> rdata; ///< Read Data Signaln ✅
+    sc_out<bool> hit; ///< Hit Signal ✅
+    sc_out<size_t> cycles_total; ///< Number of Cycles needed to complete the operation ✅
     // Memory Input Signals
-    sc_in<uint32_t> memory_rdata;                            ///< Read Data Signal from Memory ✅
+    sc_in<uint32_t> memory_rdata; ///< Read Data Signal from Memory ✅
     // Memory Output Signals
-    sc_out<uint32_t> memory_addr;                            ///< Address Signal to Memory ✅
-    sc_out<uint32_t> memory_wdata;                           ///< Write Data Signal to Memory ✅
-    sc_out<bool> memory_we;                                  ///< Write Enable Signal to Memory ✅
+    sc_out<uint32_t> memory_addr; ///< Address Signal to Memory ✅
+    sc_out<uint32_t> memory_wdata; ///< Write Data Signal to Memory ✅
+    sc_out<bool> memory_we; ///< Write Enable Signal to Memory ✅
 
-    SC_HAS_PROCESS(Cache);                                   ///< Macro for multiple-argument constructor of the Module
+    SC_HAS_PROCESS(Cache); ///< Macro for multiple-argument constructor of the Module
 
     /**
      * Constructor of the Module
@@ -58,9 +58,9 @@ public:
         MEMORY_LATENCY(memoryLatency),
         DIRECT_MAPPED(directMapped)
     {
-        if (DIRECT_MAPPED)                        ///< If Direct Mapped
+        if (DIRECT_MAPPED) ///< If Direct Mapped
         {
-            SC_THREAD(process_direct_mapped);     ///< Process Direct Mapped Cache
+            SC_THREAD(process_direct_mapped); ///< Process Direct Mapped Cache
         }
         else
         {
@@ -87,7 +87,7 @@ public:
     }
 
 private:
-    CacheLine** cache;            ///< Array of Cache Lines
+    CacheLine** cache; ///< Array of Cache Lines
     std::list<unsigned> lru_list; ///< List for LRU
 
     /**
@@ -131,53 +131,54 @@ private:
             std::printf("Process Direct Mapped\n");
             wait(clk.posedge_event());
 
-            uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1);                ///< Offset for current request
-            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1); ///< Index for current request
-            uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS);                ///< Tag for current request
+            uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
+            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);
+            ///< Index for current request
+            uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS); ///< Tag for current request
 
-            CacheLine* line = cache[index];                     ///< Cache Line for the current request
-            size_t cycles = CACHE_LATENCY;                      ///< Add Cache Latency to the total cycles
+            CacheLine* line = cache[index]; ///< Cache Line for the current request
+            size_t cycles = CACHE_LATENCY; ///< Add Cache Latency to the total cycles
 
-            if (we.read())                                      ///< Write to cache
+            if (we.read()) ///< Write to cache
             {
-                cycles += MEMORY_LATENCY;                       ///< Add Memory Latency to the total cycles
-                if (line->tag == tag && line->valid[offset])    ///< Cache hit
+                cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                if (line->tag == tag && line->valid[offset]) ///< Cache hit
                 {
-                    hit.write(true);                      ///< Hit Signal (true)
+                    hit.write(true); ///< Hit Signal (true)
                 }
-                else                                            ///< Cache miss
+                else ///< Cache miss
                 {
-                    hit.write(false);                     ///< Hit Signal (false)
-                    line->tag = tag;                            ///< Update the tag
-                    line->valid[offset] = true;                 ///< Set the valid bit
+                    hit.write(false); ///< Hit Signal (false)
+                    line->tag = tag; ///< Update the tag
+                    line->valid[offset] = true; ///< Set the valid bit
                 }
-                line->data[offset] = wdata.read();              ///< Write the data to the cache
-                memory_addr.write(addr.read());           ///< Address to memory
-                memory_wdata.write(wdata.read());         ///< Write data to memory
-                memory_we.write(true);                    ///< Enable write to memory
+                line->data[offset] = wdata.read(); ///< Write the data to the cache
+                memory_addr.write(addr.read()); ///< Address to memory
+                memory_wdata.write(wdata.read()); ///< Write data to memory
+                memory_we.write(true); ///< Enable write to memory
             }
-            else                                                ///< Read from cache
+            else ///< Read from cache
             {
-                if (line->tag == tag && line->valid[offset])    ///< Cache hit
+                if (line->tag == tag && line->valid[offset]) ///< Cache hit
                 {
-                    hit.write(true);                      ///< Hit Signal (true)
-                    rdata.write(line->data[offset]);            ///< Read the data from the cache
+                    hit.write(true); ///< Hit Signal (true)
+                    rdata.write(line->data[offset]); ///< Read the data from the cache
                 }
-                else                                            ///< Cache miss
+                else ///< Cache miss
                 {
-                    cycles += MEMORY_LATENCY;                   ///< Add Memory Latency to the total cycles
-                    hit.write(false);                     ///< Hit Signal (false)
-                    memory_addr.write(addr.read());       ///< Address to memory
-                    memory_we.write(false);               ///< Disable write to memory (read from memory)
-                    wait(clk.posedge_event());                ///< Wait for memory to provide data
+                    cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    hit.write(false); ///< Hit Signal (false)
+                    memory_addr.write(addr.read()); ///< Address to memory
+                    memory_we.write(false); ///< Disable write to memory (read from memory)
+                    wait(clk.posedge_event()); ///< Wait for memory to provide data
                     uint32_t memory_data = memory_rdata.read(); ///< Read the data from memory
-                    rdata.write(memory_data);                   ///< Write the data to the read data signal
-                    line->valid[offset] = true;                 ///< Set the valid bit
-                    line->tag = tag;                            ///< Update the tag
-                    line->data[offset] = memory_data;           ///< Write the data to the cache
+                    rdata.write(memory_data); ///< Write the data to the read data signal
+                    line->valid[offset] = true; ///< Set the valid bit
+                    line->tag = tag; ///< Update the tag
+                    line->data[offset] = memory_data; ///< Write the data to the cache
                 }
             }
-            cycles_total.write(cycles);                              ///< Write the total cycles to the cycles signal
+            cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
         }
     }
 
@@ -192,7 +193,7 @@ private:
             wait(clk.posedge_event());
 
             uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
-            uint32_t tag = addr.read() >> OFFSET_BITS;              ///< Tag for current request
+            uint32_t tag = addr.read() >> OFFSET_BITS; ///< Tag for current request
 
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(
@@ -207,55 +208,55 @@ private:
             int lineIndex = linePointer != cache + CACHE_LINES ? linePointer - cache : -1;
             size_t cycles = CACHE_LATENCY;
 
-            if (lineIndex != -1)                                     ///< Cache hit
+            if (lineIndex != -1) ///< Cache hit
             {
-                hit.write(true);                               ///< Hit Signal (true)
-                if (we.read())                                       ///< Write to cache
+                hit.write(true); ///< Hit Signal (true)
+                if (we.read()) ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY;
                     wait(MEMORY_LATENCY);
-                    cache[lineIndex]->data[offset] = wdata.read();   ///< Write the data to the cache
-                    cache[lineIndex]->valid[offset] = true;          ///< Set the valid bit
-                    memory_addr.write(addr.read());            ///< Address to memory
-                    memory_wdata.write(wdata.read());          ///< Write data to memory
-                    memory_we.write(true);                     ///< Enable write to memory
+                    cache[lineIndex]->data[offset] = wdata.read(); ///< Write the data to the cache
+                    cache[lineIndex]->valid[offset] = true; ///< Set the valid bit
+                    memory_addr.write(addr.read()); ///< Address to memory
+                    memory_wdata.write(wdata.read()); ///< Write data to memory
+                    memory_we.write(true); ///< Enable write to memory
                 }
                 else
                 {
-                    rdata.write(cache[lineIndex]->data[offset]);     ///< Read the data from the cache
+                    rdata.write(cache[lineIndex]->data[offset]); ///< Read the data from the cache
                 }
             }
             else
             {
-                hit.write(false);                              ///< Cache miss
-                const uint32_t lru_pointer = get_lru_index();              ///< Get the LRU index
+                hit.write(false); ///< Cache miss
+                const uint32_t lru_pointer = get_lru_index(); ///< Get the LRU index
                 std::printf("LRU Pointer: %d\n", lru_pointer);
-                if (we.read())                                       ///< Write to cache
+                if (we.read()) ///< Write to cache
                 {
-                    cycles += MEMORY_LATENCY;                        ///< Add Memory Latency to the total cycles
-                    cache[lru_pointer]->tag = tag;                   ///< Update the tag
+                    cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    cache[lru_pointer]->tag = tag; ///< Update the tag
                     cache[lru_pointer]->data[offset] = wdata.read(); ///< Write the data to the cache
-                    cache[lru_pointer]->valid[offset] = true;        ///< Set the valid bit
-                    memory_addr.write(addr.read());            ///< Address to memory
-                    memory_wdata.write(wdata.read());          ///< Write data to memory
-                    memory_we.write(true);                     ///< Enable write to memory
-                    update_lru(lru_pointer);                         ///< Update the LRU list
+                    cache[lru_pointer]->valid[offset] = true; ///< Set the valid bit
+                    memory_addr.write(addr.read()); ///< Address to memory
+                    memory_wdata.write(wdata.read()); ///< Write data to memory
+                    memory_we.write(true); ///< Enable write to memory
+                    update_lru(lru_pointer); ///< Update the LRU list
                 }
                 else
                 {
-                    cycles += MEMORY_LATENCY;                        ///< Add Memory Latency to the total cycles
-                    memory_addr.write(addr.read());            ///< Address to memory
-                    memory_we.write(false);                    ///< Disable write to memory (read from memory)
-                    wait(clk.posedge_event());                     ///< Wait for memory to provide data
-                    uint32_t memory_data = memory_rdata.read();      ///< Read the data from memory
-                    rdata.write(memory_data);                        ///< Write the data to the read data signal
-                    cache[lru_pointer]->tag = tag;                   ///< Update the tag
-                    cache[lru_pointer]->data[offset] = memory_data;  ///< Write the data to the cache
-                    cache[lru_pointer]->valid[offset] = true;        ///< Set the valid bit
-                    update_lru(lru_pointer);                         ///< Update the LRU list
+                    cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    memory_addr.write(addr.read()); ///< Address to memory
+                    memory_we.write(false); ///< Disable write to memory (read from memory)
+                    wait(clk.posedge_event()); ///< Wait for memory to provide data
+                    uint32_t memory_data = memory_rdata.read(); ///< Read the data from memory
+                    rdata.write(memory_data); ///< Write the data to the read data signal
+                    cache[lru_pointer]->tag = tag; ///< Update the tag
+                    cache[lru_pointer]->data[offset] = memory_data; ///< Write the data to the cache
+                    cache[lru_pointer]->valid[offset] = true; ///< Set the valid bit
+                    update_lru(lru_pointer); ///< Update the LRU list
                 }
             }
-            cycles_total.write(cycles);                                   ///< Write the total cycles to the cycles signal
+            cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
         }
     }
 };

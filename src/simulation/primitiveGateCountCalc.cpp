@@ -15,14 +15,15 @@
  *  - Transistors are considered to be primitive gates
  *  - "More than Two-Inputs" gates are assumed to be still primitive gates
  */
-size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSize, unsigned const tagBits, unsigned const indexBits,
+size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSize, unsigned const tagBits,
+                          unsigned const indexBits,
                           bool const directMapped)
 {
     // Calculate the number of gates required to realize a multiplexer, comparator, and storage cells
     unsigned const muxGateCount = tagBits * ::muxGateCount(cacheLines, indexBits);
     unsigned const comparatorGateCount = directMapped
-                                  ? ::comparatorGateCount(tagBits)
-                                  : ::comparatorGateCount(tagBits) * cacheLines;
+                                             ? ::comparatorGateCount(tagBits)
+                                             : ::comparatorGateCount(tagBits) * cacheLines;
     unsigned const storageGateCount = ::storageGateCount(CacheLineSize, cacheLines, tagBits);
 
     // If direct mapped, we need the mux, comparator, and storage gates
@@ -44,10 +45,10 @@ size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSiz
 unsigned muxGateCount(unsigned const cacheLines, unsigned const indexBits)
 {
     // N = cacheLines | I = indexBits
-    unsigned const not_num = indexBits;  ///< Number of NOT gates
+    unsigned const not_num = indexBits; ///< Number of NOT gates
     unsigned const and_num = cacheLines; ///< (I + 1) Inputs | Number of AND gates
-    unsigned constexpr or_num = 1;       ///< N Inputs | Number of OR gates
-    return not_num + and_num + or_num;   ///< Total number of gates
+    unsigned constexpr or_num = 1; ///< N Inputs | Number of OR gates
+    return not_num + and_num + or_num; ///< Total number of gates
 }
 
 /**
@@ -58,8 +59,8 @@ unsigned muxGateCount(unsigned const cacheLines, unsigned const indexBits)
 unsigned comparatorGateCount(unsigned const tagBits)
 {
     unsigned const xor_num = 1 * tagBits; ///< Number of XOR gates
-    unsigned constexpr and_num = 1;       ///< xor_num Inputs | Number of AND gates
-    return xor_num + and_num;             //< Total number of gates
+    unsigned constexpr and_num = 1; ///< xor_num Inputs | Number of AND gates
+    return xor_num + and_num; //< Total number of gates
 }
 
 /**

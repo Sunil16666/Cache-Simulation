@@ -52,7 +52,8 @@ public:
      * @param memoryLatency
      */
     Controller(sc_module_name name, const bool directMapped, struct Request* requests,
-               const size_t num_requests, const unsigned cacheLines, const unsigned cacheLineSize, const unsigned cacheLatency,
+               const size_t num_requests, const unsigned cacheLines, const unsigned cacheLineSize,
+               const unsigned cacheLatency,
                const unsigned memoryLatency) :
         sc_module(name),
         DIRECT_MAPPED(directMapped),
