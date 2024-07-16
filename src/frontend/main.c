@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 
 struct Request
@@ -31,7 +32,6 @@ extern struct Result run_simulation(
 
 int main(int argc, char *argv[])
 {
-
     // Default values for simulation parameters
     int cycles = 100;
     int directMapped = 1;
@@ -51,53 +51,67 @@ int main(int argc, char *argv[])
         {"cache-latency", required_argument, 0, 'f'},
         {"memory-latency", required_argument, 0, 'g'},
         {"tf=", required_argument, 0, 'i'},
-        {"help", required_argument, 0, 'h'},
+        {"help", no_argument, 0, 'h'},
         {0, 0, 0, 0}
     };
 
     int option_index = 0;
     int opt;
 
-    while ((opt = getopt_long(argc, argv, "c:h:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "abc:d:e:f:g:i:h", long_options, &option_index)) != -1) {
     switch (opt) {
     case 'a': //--directmapped
         {printf("directmapped\n");
         directMapped = 1;
         break;}
-    case 'b'://--fullassociative
+    case 'b': //--fullassociative
         {printf("fullassociative\n");
         fullassociative = 1;
         break;}
     case 'c': //--cycles <number> / -c <number>
         {printf("cycles %s\n", optarg);
-        cycles = optarg;
+        cycles = atoi(optarg);
         break;}
-    case 'd'://--cacheline-size <number>
+    case 'd': //--cacheline-size <number>
         {printf("cacheline-size %s", optarg);
-        cacheLineSize = optarg;
+        cacheLineSize = atoi(optarg);
         break;}
-    case 'e'://--cachelines <number>
+    case 'e': //--cachelines <number>
         {
-        cacheLines = optarg;
+        cacheLines = atoi(optarg);
         break;}
-    case 'f'://--cache-latency <number>
+    case 'f': //--cache-latency <number>
         {
-        cacheLatency = optarg;
+        cacheLatency = atoi(optarg);
         break;}
-    case 'g'://--memory-lateny <number>
+    case 'g': //--memory-lateny <number>
         {
-        memoryLatency = optarg;
-        break;}
-    case 'h'://--help / -h
-        {
-
+        memoryLatency = atoi(optarg);
         break;
         }
-    case 'i'://--tf=<filename>
+    case 'h': //--help / -h
+        {
+        fprintf(stderr, "Usage: %s [options]\n", argv[0]);
+        fprintf(stderr, "  -c, --cycles <number>       Set the number of cycles for the simulation\n");
+        fprintf(stderr, "  -a, --directmapped          Set cache mapping to direct mapped\n");
+        fprintf(stderr, "  -b, --fullassociative       Set cache mapping to fully associative\n");
+        fprintf(stderr, "  -d, --cacheline-size <size> Set the cache line size\n");
+        fprintf(stderr, "  -e, --cachelines <number>   Set the number of cache lines\n");
+        fprintf(stderr, "  -f, --cache-latency <latency> Set the cache latency\n");
+        fprintf(stderr, "  -g, --memory-latency <latency> Set the memory latency\n");
+        fprintf(stderr, "  -i, --tf=<filename>         Set the trace file name\n");
+        fprintf(stderr, "  -h, --help                  Display this help and exit\n");
+        return 0;
+        }
+    case 'i': //--tf=<filename>
         {
         tracefile = optarg;
         break;
             }
+    default:
+        fprintf(stderr, "Unknown option: %s\n", argv[optind-1]);
+        fprintf(stderr, "Use -h or --help for displaying valid options.\n");
+        return 1;
         }
     }
 

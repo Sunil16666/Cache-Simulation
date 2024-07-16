@@ -17,7 +17,7 @@ CXXFLAGS = -std=c++14 -Wall -Wextra -g $(INCLUDES)
 
 # SystemC path
 INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
-LIBS = -L$(SYSTEMC_HOME)/lib-linux64 -l systemc -lm
+LIBS = -L$(SYSTEMC_HOME)/lib -l systemc -lm
 
 # Executable name
 TARGET = sc_main
