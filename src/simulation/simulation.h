@@ -52,6 +52,4 @@ struct Result
     size_t primitiveGateCount; ///< Number of primitive Gates needed to realize such Cache
 };
 
-extern sc_core::sc_trace_file* trace; // TODO: Implement this
-
 #endif //SIMULATION_H

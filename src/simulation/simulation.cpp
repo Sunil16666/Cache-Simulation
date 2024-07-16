@@ -26,7 +26,7 @@ struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request* requests,
+    struct Request requests[num_Requests],
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal
