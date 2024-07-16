@@ -59,6 +59,6 @@ $(TARGET): $(OBJS)
 
 # cleans previous builds
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET) $(OBJS) *.vcd
 
 .PHONY: all debug release clean
