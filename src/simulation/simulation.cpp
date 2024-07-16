@@ -26,7 +26,7 @@ struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request requests[num_Requests],
+    struct Request* requests,
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal
@@ -84,4 +84,10 @@ struct Result run_simulation(
 
     // Return the results of the simulation
     return result;
+}
+
+int sc_main(int argc, char* argv[])
+{
+    std::cout << "ERROR" << std::endl;
+    return 1;
 }

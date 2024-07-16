@@ -7,17 +7,17 @@
 
 # Entry point for the program
 C_SRCS = src/frontend/file_processing.c src/frontend/parser.c src/frontend/main.c
-CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/sc_main.cpp src/testing/expectedResult.cpp
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp
 
 # Compiler and flags
 CC = gcc
 CXX = g++
-CFLAGS = -std=c17 -Wall -Wextra -g
-CXXFLAGS = -std=c++14 -Wall -Wextra -g
+CFLAGS = -std=c17 -Wall -Wextra -g -D_POSIX_C_SOURCE=200809L $(INCLUDES)
+CXXFLAGS = -std=c++14 -Wall -Wextra -g $(INCLUDES)
 
 # SystemC path
-INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend -Isrc/testing
-LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
+INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
+LIBS = -L$(SYSTEMC_HOME)/lib-linux64 -l systemc -lm
 
 # Executable name
 TARGET = sc_main
@@ -55,7 +55,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # cleans previous builds
 clean:
