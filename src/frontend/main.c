@@ -4,15 +4,13 @@
 #include <stdlib.h>
 
 
-struct Request
-{
+struct Request {
     uint32_t addr; ///< Memory address
     uint32_t data; ///< Requested Data
     int we; ///< WriteEnabled (true or false)
 };
 
-struct Result
-{
+struct Result {
     size_t cycles; ///< Number of cycles needed to complete the simulation
     size_t misses; ///< Number of total misses occured during the simulation
     size_t hits; ///< Number of total hits occured during the simulation
@@ -27,12 +25,11 @@ extern struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request* requests,
-    const char* tracefile);
+    struct Request *requests,
+    const char *tracefile);
 
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     // Default values for simulation parameters
     int cycles = 100;
     int directMapped = 1;
@@ -41,7 +38,8 @@ int main(int argc, char* argv[])
     unsigned cacheLines = 128;
     unsigned cacheLatency = 2;
     unsigned memoryLatency = 10;
-    const char* tracefile = "trace";
+    const char *tracefile = "trace";
+    const char *input_file_path = "/csv/matrix_multiplication_trace.csv";
 
     static struct option long_options[] = {
         {"cycles", required_argument, 0, 'c'},
@@ -59,50 +57,52 @@ int main(int argc, char* argv[])
     int option_index = 0;
     int opt;
 
-    while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1)
-    {
-        switch (opt)
-        {
-        case 'a': //--directmapped
+    while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
+        switch (opt) {
+            case 'a': //--directmapped
             {
+                if (fullassociative) {
+                    perror("Please choose only one of --fullassociative or --directmapped");
+                    return 1;
+                }
                 printf("directmapped\n");
                 directMapped = 1;
                 break;
             }
-        case 'b': //--fullassociative
+            case 'b': //--fullassociative
             {
                 printf("fullassociative\n");
                 fullassociative = 1;
                 break;
             }
-        case 'c': //--cycles <number> / -c <number>
+            case 'c': //--cycles <number> / -c <number>
             {
                 printf("cycles %s\n", optarg);
                 cycles = atoi(optarg);
                 break;
             }
-        case 'd': //--cacheline-size <number>
+            case 'd': //--cacheline-size <number>
             {
                 printf("cacheline-size %s", optarg);
                 cacheLineSize = atoi(optarg);
                 break;
             }
-        case 'e': //--cachelines <number>
+            case 'e': //--cachelines <number>
             {
                 cacheLines = atoi(optarg);
                 break;
             }
-        case 'f': //--cache-latency <number>
+            case 'f': //--cache-latency <number>
             {
                 cacheLatency = atoi(optarg);
                 break;
             }
-        case 'g': //--memory-lateny <number>
+            case 'g': //--memory-lateny <number>
             {
                 memoryLatency = atoi(optarg);
                 break;
             }
-        case 'h': //--help / -h
+            case 'h': //--help / -h
             {
                 fprintf(stderr, "Usage: %s [options]\n", argv[0]);
                 fprintf(stderr, "  -c, --cycles <number>      Set the number of cycles for the simulation\n");
@@ -116,15 +116,25 @@ int main(int argc, char* argv[])
                 fprintf(stderr, "  -h, --help                 Display this help and exit\n");
                 return 0;
             }
-        case 'i': //--tf=<filename>
+            case 'i': //--tf=<filename>
             {
                 tracefile = optarg;
                 break;
             }
-        default:
-            fprintf(stderr, "Unknown option: %s\n", argv[optind - 1]);
-            fprintf(stderr, "Use -h or --help for displaying valid options.\n");
-            return 1;
+            default:
+                fprintf(stderr, "Unknown option: %s\n", argv[optind - 1]);
+                fprintf(stderr, "Use -h or --help for displaying valid options.\n");
+                return 1;
+        }
+    }
+
+    //Handle positional parameters
+    if (optind < argc) {
+        while (optind < argc) {
+            optind++;
+            if (optind == argc) {
+                input_file_path = argv[optind];
+            }
         }
     }
 

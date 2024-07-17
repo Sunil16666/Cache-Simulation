@@ -17,7 +17,17 @@ CXXFLAGS = -std=c++14 -Wall -Wextra -g $(INCLUDES)
 
 # SystemC path
 INCLUDES = -I$(SYSTEMC_HOME)/include -Isrc/simulation -Isrc/frontend
-LIBS = -L$(SYSTEMC_HOME)/lib -l systemc -lm
+# Detect the OS
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Darwin) # macOS
+    LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
+else ifeq ($(OS), Windows_NT) # Windows
+    LIBS = -L$(SYSTEMC_HOME)/lib -lsystemc -lm
+else # Fallback / Linux
+    LIBS = -L$(SYSTEMC_HOME)/lib-linux64 -lsystemc -lm
+endif
+
 
 # Executable name
 TARGET = sc_main

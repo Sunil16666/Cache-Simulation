@@ -2,7 +2,7 @@
 
 #include <systemc.h>
 
-#include "Controller.h"
+#include "controller.h"
 
 
 /**
@@ -26,7 +26,7 @@ struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request requests[num_Requests],
+    struct Request* requests,
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal
