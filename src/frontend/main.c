@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     int option_index = 0;
     int opt;
 
-    while ((opt = getopt_long(argc, argv, "abc:d:e:f:g:i:h", long_options, &option_index)) != -1)
+    while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1)
     {
         switch (opt)
         {
@@ -105,15 +105,15 @@ int main(int argc, char* argv[])
         case 'h': //--help / -h
             {
                 fprintf(stderr, "Usage: %s [options]\n", argv[0]);
-                fprintf(stderr, "  -c, --cycles <number>       Set the number of cycles for the simulation\n");
-                fprintf(stderr, "  -a, --directmapped          Set cache mapping to direct mapped\n");
-                fprintf(stderr, "  -b, --fullassociative       Set cache mapping to fully associative\n");
-                fprintf(stderr, "  -d, --cacheline-size <size> Set the cache line size\n");
-                fprintf(stderr, "  -e, --cachelines <number>   Set the number of cache lines\n");
-                fprintf(stderr, "  -f, --cache-latency <latency> Set the cache latency\n");
-                fprintf(stderr, "  -g, --memory-latency <latency> Set the memory latency\n");
-                fprintf(stderr, "  -i, --tf=<filename>         Set the trace file name\n");
-                fprintf(stderr, "  -h, --help                  Display this help and exit\n");
+                fprintf(stderr, "  -c, --cycles <number>      Set the number of cycles for the simulation\n");
+                fprintf(stderr, "  --directmapped             Set cache mapping to direct mapped\n");
+                fprintf(stderr, "  --fullassociative          Set cache mapping to fully associative\n");
+                fprintf(stderr, "  --cacheline-size <size>    Set the cache line size\n");
+                fprintf(stderr, "  --cachelines <number>      Set the number of cache lines\n");
+                fprintf(stderr, "  --cache-latency <latency>  Set the cache latency\n");
+                fprintf(stderr, "  --memory-latency <latency> Set the memory latency\n");
+                fprintf(stderr, "  --tf=<filename>            Set the trace file name\n");
+                fprintf(stderr, "  -h, --help                 Display this help and exit\n");
                 return 0;
             }
         case 'i': //--tf=<filename>
