@@ -38,23 +38,24 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
     while (fgets(line, sizeof(line), file))
     {
         char type[2];
-        //char addrStr[11];
-        //char dataStr[11];
         unsigned int addr;
         unsigned int data;
 
-        //printf("Reading line: %s", line);
+        #ifdef DEBUG
+        printf("Reading line: %s", line);
+        #endif
+
         int items = sscanf(line, "%1s,%10x,%10u", type, &addr, &data);
-        //printf("Parsed items: %d\n", items);
+
+        #ifdef DEBUG
+        printf("Parsed items: %d\n", items);
+        #endif
 
         if (items != 3)
         {
             fprintf(stderr, "Incorrect format: %s\n", line);
             continue;
         }
-
-        //unsigned long addr = strtoul(addrStr + 2, NULL, 16);
-        //unsigned long data = strtoul(dataStr, NULL, 10);
 
         if (addr > UINT32_MAX || data > UINT32_MAX)
         {
@@ -65,7 +66,6 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
         if (requestCount >= requestCapacity)
         {
             requestCapacity = (requestCapacity == 0) ? 1 : requestCapacity * 2;
-            //requestArray = (Request*)realloc(requestArray, requestCapacity * sizeof(Request));
             Request* tempArray = (Request*)realloc(requestArray, requestCapacity * sizeof(Request));
             if (tempArray == NULL)
             {

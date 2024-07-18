@@ -2,13 +2,16 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <errno.h>
+
 #include "file_processing.h"
 
 struct Request {
     uint32_t addr; ///< Memory address
     uint32_t data; ///< Requested Data
     int we; ///< WriteEnabled (true or false)
-};
+    };
 
 struct Result {
     size_t cycles; ///< Number of cycles needed to complete the simulation
@@ -28,6 +31,41 @@ extern struct Result run_simulation(
     struct Request *requests,
     const char *tracefile);
 
+
+int toSanitizedInt(const char *optarg, int *result) {
+    char *endptr;
+    long val;
+
+    errno = 0;    // Used to check if input is 0 and correct, or if the input is incorrect
+    val = strtol(optarg, &endptr, 10);
+
+    // Check for various possible errors
+    if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+        || (errno != 0 && val == 0)) {
+		#ifdef DEBUG
+        perror("strtol");
+		#endif
+        return -1;
+    }
+
+
+    if (endptr == optarg) {
+		#ifdef DEBUG
+        fprintf(stderr, "No digits were found\n");
+		#endif
+        return -1;
+    }
+    // Check for any trailing non-numeric characters
+    if (*endptr != '\0') {
+		#ifdef DEBUG
+        fprintf(stderr, "Non-numeric characters found: %s\n", endptr);
+		#endif
+        return -1;
+    }
+
+    *result = (int) val;
+    return 0;
+}
 
 int main(int argc, char *argv[]) {
     // Default values for simulation parameters
@@ -56,55 +94,88 @@ int main(int argc, char *argv[]) {
 
     int option_index = 0;
     int opt;
+	int number_input;
 
 	// Parameter handling
     while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'a': //--directmapped
             {
-                if (fullassociative) {
-                    perror("Please choose only one of --fullassociative or --directmapped");
-                    return 1;
-                }
+				#ifdef DEBUG
                 printf("directmapped\n");
+				#endif
                 directMapped = 1;
                 break;
             }
             case 'b': //--fullassociative
             {
-				if (directMapped) {
-                    perror("Please choose only one of --fullassociative or --directmapped");
-                    return 1;
-			}
+				#ifdef DEBUG
                 printf("fullassociative\n");
+				#endif
+
                 fullassociative = 1;
                 break;
             }
             case 'c': //--cycles <number> / -c <number>
             {
-                printf("cycles %s\n", optarg);
-                cycles = atoi(optarg);
+				if(toSanitizedInt(optarg, &number_input) == 0) {
+				#ifdef DEBUG
+                printf("cycles %d\n", number_input);
+				#endif
+
+                cycles = number_input;
+				} else {
+				return 1;
+				}
                 break;
             }
             case 'd': //--cacheline-size <number>
             {
-                printf("cacheline-size %s", optarg);
-                cacheLineSize = atoi(optarg);
+				if(toSanitizedInt(optarg, &number_input) == 0) {
+				#ifdef DEBUG
+                printf("cacheline-size %s\n", number_input);
+				#endif
+
+                cacheLineSize = number_input;
+				} else {
+				return 1;
+				}
                 break;
             }
             case 'e': //--cachelines <number>
             {
-                cacheLines = atoi(optarg);
+				if(toSanitizedInt(optarg, &number_input) == 0) {
+				#ifdef DEBUG
+				printf("cachelines: %s\n", number_input);
+				#endif
+                cacheLines = number_input;
+				} else {
+				return 1;
+				}
                 break;
             }
             case 'f': //--cache-latency <number>
             {
-                cacheLatency = atoi(optarg);
+				if(toSanitizedInt(optarg, &number_input) == 0) {
+				#ifdef DEBUG
+				printf("cache-latency: %s\n", number_input);
+				#endif
+                cacheLatency = number_input;
+				} else {
+				return 1;
+				}
                 break;
             }
             case 'g': //--memory-lateny <number>
             {
-                memoryLatency = atoi(optarg);
+				if(toSanitizedInt(optarg, &number_input) == 0) {
+				#ifdef DEBUG
+				printf("memory-latency: %s\n",number_input);
+				#endif
+                memoryLatency = number_input;
+				} else {
+				return 1;
+				}
                 break;
             }
             case 'h': //--help / -h
@@ -124,6 +195,9 @@ int main(int argc, char *argv[]) {
             case 'i': //--tf=<filename>
             {
                 tracefile = optarg;
+				#ifdef DEBUG
+				printf("Tracefile: %s\n", tracefile);
+				#endif
                 break;
             }
             default:
@@ -133,17 +207,23 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if (fullassociative && directMapped) {
+        perror("Please choose only one of --fullassociative or --directmapped");
+        return 1;
+    }
 
 Request* requests;
 size_t num_Requests;
 
-    //Positional parameter handling
-    if (optind < argc) {
-        input_file_path = argv[optind];
-        printf("Input file: %s\n", input_file_path);
+//Positional parameter handling
+if (optind < argc) {
+	input_file_path = argv[optind];
+	#ifdef DEBUG
+	printf("Input file: %s\n", input_file_path);
+	#endif
 
-        FileProcessing* fileProc = createFileProcessing(input_file_path);
-    if (!fileProc) {
+	FileProcessing* fileProc = createFileProcessing(input_file_path);
+	if (!fileProc) {
         fprintf(stderr, "Failed to initialize FileProcessing.\n");
         return 1;
     }
@@ -151,27 +231,27 @@ size_t num_Requests;
 	getRequests(fileProc, &num_Requests, &requests);
 
 	if (num_Requests > 0 && requests != NULL) {
+		#ifdef DEBUG
         printf("Fetched %zu requests:\n", num_Requests);
         for (size_t i = 0; i < num_Requests; i++) {
             printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
-                   i, requests[i].addr, requests[i].data, requests[i].we);
+				i, requests[i].addr, requests[i].data, requests[i].we);
         }
+		#endif
     } else {
-        printf("No requests fetched or an error occurred.\n");
+		printf("No requests fetched or an error occurred.\n");
 		return 1;
-    }
-
+	}
     // Clean up
     deleteFileProcessing(fileProc);
-
-    }
+}
 
 	// Simulation
-	struct Result result = run_simulation(
-        cycles, directMapped, cacheLines, cacheLineSize,
-        cacheLatency, memoryLatency, num_Requests,
-        requests, tracefile
-    );
+    struct Result result = run_simulation(
+    	cycles, directMapped, cacheLines, cacheLineSize,
+    	cacheLatency, memoryLatency, num_Requests,
+    	requests, tracefile
+    	);
 
     // Results
     printf("Simulation Results:\n");
@@ -180,5 +260,5 @@ size_t num_Requests;
     printf("Hits: %zu\n", result.hits);
     printf("Primitive Gate Count: %zu\n", result.primitiveGateCount);
 
-    return 0;
+	return 0;
 }

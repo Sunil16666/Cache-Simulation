@@ -52,9 +52,12 @@ endif
 all: debug
 
 # Debug build
+debug: CFLAGS += -DDEBUG
+debug: CXXFLAGS += -DDEBUG
 debug: $(TARGET)
 
 # Release build
+release: CFLAGS += -O2
 release: CXXFLAGS += -O2
 release: $(TARGET)
 
