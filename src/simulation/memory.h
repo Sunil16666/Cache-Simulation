@@ -1,7 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include <map>
-#include <systemc.h>
+#include <systemc>
 
 /**
  * Memory Module for the Simulation

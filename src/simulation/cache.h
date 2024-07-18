@@ -3,7 +3,7 @@
 
 #include <list>
 #include <queue>
-#include <systemc.h>
+#include <systemc>
 
 #include "cacheLine.h"
 #include "simulation.h"

@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <systemc.h>
+#include <systemc>
 
 #include "cache.h"
 #include "memory.h"
