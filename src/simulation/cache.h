@@ -226,12 +226,28 @@ private:
             uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
             uint32_t tag = addr.read() >> OFFSET_BITS; ///< Tag for current request
 
+            if (tag >= (1 << TAG_BITS))
+            {
+                std::fprintf(stderr, "Tag out of bounds\n");
+                return;
+            }
+            if (offset >= CACHE_LINE_SIZE)
+            {
+                std::fprintf(stderr, "Offset out of bounds\n");
+                return;
+            }
+
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(
                 cache, cache + CACHE_LINES, [tag, offset](CacheLine* line)
                 {
                     return line->tag == tag && line->valid[offset];
                 });
+
+            if (linePointer == nullptr)
+            {
+                std::printf("Line Pointer is null\n");
+            }
 
             std::printf("Line Pointer: %p\n", linePointer);
 
