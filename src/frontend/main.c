@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     unsigned cacheLines = 128;
     unsigned cacheLatency = 2;
     unsigned memoryLatency = 10;
-    const char *tracefile = "trace";
+    const char *tracefile = NULL;
     const char *input_file_path = "/csv/matrix_multiplication_trace.csv";
 
     static struct option long_options[] = {
@@ -259,6 +259,13 @@ if (optind < argc) {
     printf("Misses: %zu\n", result.misses);
     printf("Hits: %zu\n", result.hits);
     printf("Primitive Gate Count: %zu\n", result.primitiveGateCount);
+	printf("Number of Requests: %zu\n", num_Requests);
+
+	// print requests
+	for (size_t i = 0; i < num_Requests; i++) {
+		printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+			i, requests[i].addr, requests[i].data, requests[i].we);
+	}
 
 	return 0;
 }
