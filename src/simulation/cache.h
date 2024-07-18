@@ -86,6 +86,15 @@ public:
         }
     }
 
+    ~Cache()
+    {
+        for (unsigned i = 0; i < CACHE_LINES; i++)
+        {
+            delete cache[i];
+        }
+        delete[] cache;
+    }
+
 private:
     CacheLine** cache; ///< Array of Cache Lines
     std::list<unsigned> lru_list; ///< List for LRU
@@ -136,7 +145,29 @@ private:
             ///< Index for current request
             uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS); ///< Tag for current request
 
+            if (index >= CACHE_LINES)
+            {
+                std::fprintf(stderr, "Index out of bounds\n");
+                return;
+            }
+            if (tag >= (1 << TAG_BITS))
+            {
+                std::fprintf(stderr, "Tag out of bounds\n");
+                return;
+            }
+            if (offset >= CACHE_LINE_SIZE)
+            {
+                std::fprintf(stderr, "Offset out of bounds\n");
+                return;
+            }
+
             CacheLine* line = cache[index]; ///< Cache Line for the current request
+            if (line == nullptr)
+            {
+                std::fprintf(stderr, "Cache Line is null\n");
+                return;
+            }
+
             size_t cycles = CACHE_LATENCY; ///< Add Cache Latency to the total cycles
 
             if (we.read()) ///< Write to cache
