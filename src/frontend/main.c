@@ -2,7 +2,7 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <stdlib.h>
-
+#include "file_processing.h"
 
 struct Request {
     uint32_t addr; ///< Memory address
@@ -32,7 +32,7 @@ extern struct Result run_simulation(
 int main(int argc, char *argv[]) {
     // Default values for simulation parameters
     int cycles = 100;
-    int directMapped = 1;
+    int directMapped = 0;
     int fullassociative = 0;
     unsigned cacheLineSize = 64;
     unsigned cacheLines = 128;
@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
     int option_index = 0;
     int opt;
 
+	// Parameter handling
     while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'a': //--directmapped
@@ -71,6 +72,10 @@ int main(int argc, char *argv[]) {
             }
             case 'b': //--fullassociative
             {
+				if (directMapped) {
+                    perror("Please choose only one of --fullassociative or --directmapped");
+                    return 1;
+			}
                 printf("fullassociative\n");
                 fullassociative = 1;
                 break;
@@ -128,32 +133,47 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    //Handle positional parameters
+
+Request* requests;
+size_t num_Requests;
+
+    //Positional parameter handling
     if (optind < argc) {
-        while (optind < argc) {
-            optind++;
-            if (optind == argc) {
-                input_file_path = argv[optind];
-            }
-        }
+        input_file_path = argv[optind];
+        printf("Input file: %s\n", input_file_path);
+
+        FileProcessing* fileProc = createFileProcessing(input_file_path);
+    if (!fileProc) {
+        fprintf(stderr, "Failed to initialize FileProcessing.\n");
+        return 1;
     }
 
+	getRequests(fileProc, &num_Requests, &requests);
 
-    // Example memory requests
-    struct Request requests[] = {
-        {0x0040, 0x1, 1},
-        {0x00A0, 0x2, 0}
-    };
-    size_t num_Requests = sizeof(requests) / sizeof(requests[0]);
+	if (num_Requests > 0 && requests != NULL) {
+        printf("Fetched %zu requests:\n", num_Requests);
+        for (size_t i = 0; i < num_Requests; i++) {
+            printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+                   i, requests[i].addr, requests[i].data, requests[i].we);
+        }
+    } else {
+        printf("No requests fetched or an error occurred.\n");
+		return 1;
+    }
 
-    // Run the simulation
-    struct Result result = run_simulation(
+    // Clean up
+    deleteFileProcessing(fileProc);
+
+    }
+
+	// Simulation
+	struct Result result = run_simulation(
         cycles, directMapped, cacheLines, cacheLineSize,
         cacheLatency, memoryLatency, num_Requests,
         requests, tracefile
     );
 
-    // Output results
+    // Results
     printf("Simulation Results:\n");
     printf("Cycles: %zu\n", result.cycles);
     printf("Misses: %zu\n", result.misses);

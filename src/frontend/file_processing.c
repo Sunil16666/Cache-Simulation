@@ -38,16 +38,23 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
     while (fgets(line, sizeof(line), file))
     {
         char type[2];
-        char addrStr[11];
-        char dataStr[11];
+        //char addrStr[11];
+        //char dataStr[11];
+        unsigned int addr;
+        unsigned int data;
 
-        if (sscanf(line, "%1s,%10s,%10s", type, addrStr, dataStr) != 3)
+        //printf("Reading line: %s", line);
+        int items = sscanf(line, "%1s,%10x,%10u", type, &addr, &data);
+        //printf("Parsed items: %d\n", items);
+
+        if (items != 3)
         {
+            fprintf(stderr, "Incorrect format: %s\n", line);
             continue;
         }
 
-        unsigned long addr = strtoul(addrStr + 2, NULL, 16);
-        unsigned long data = strtoul(dataStr, NULL, 10);
+        //unsigned long addr = strtoul(addrStr + 2, NULL, 16);
+        //unsigned long data = strtoul(dataStr, NULL, 10);
 
         if (addr > UINT32_MAX || data > UINT32_MAX)
         {
@@ -58,12 +65,23 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
         if (requestCount >= requestCapacity)
         {
             requestCapacity = (requestCapacity == 0) ? 1 : requestCapacity * 2;
-            requestArray = (Request*)realloc(requestArray, requestCapacity * sizeof(Request));
+            //requestArray = (Request*)realloc(requestArray, requestCapacity * sizeof(Request));
+            Request* tempArray = (Request*)realloc(requestArray, requestCapacity * sizeof(Request));
+            if (tempArray == NULL)
+            {
+                fprintf(stderr, "Memory allocation failed\n");
+                free(requestArray); // Prevent memory leak
+                fclose(file);
+                *numRequests = 0;
+                *requests = NULL;
+                return;
+            }
+            requestArray = tempArray;
         }
 
         Request req;
-        req.addr = (uint32_t)addr;
-        req.data = (uint32_t)data;
+        req.addr = addr;
+        req.data = data;
         req.we = (type[0] == 'W') ? 1 : 0;
         requestArray[requestCount++] = req;
     }
