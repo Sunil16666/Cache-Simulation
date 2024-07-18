@@ -69,16 +69,16 @@ public:
         sensitive << clk.pos() << we << addr << wdata; ///< Sensitivity List
 
         // Initialize the Cache
-        cache = new CacheLine*[cacheLines];
         initialize();
     }
 
     // Intialize and clean up the Cache
     void initialize()
     {
-        for (unsigned i = 0; i < CACHE_LINES; i++)
+        cache.resize(CACHE_LINES);
+        for (unsigned i = 0; i < CACHE_LINES; ++i)
         {
-            cache[i] = new CacheLine(CACHE_LINE_SIZE);
+            cache[i] = std::make_unique<CacheLine>(CACHE_LINE_SIZE);
         }
         if (!DIRECT_MAPPED)
         {
@@ -86,17 +86,13 @@ public:
         }
     }
 
-    ~Cache()
+    ~Cache() ///< Destructor of the Module
     {
-        for (unsigned i = 0; i < CACHE_LINES; i++)
-        {
-            delete cache[i];
-        }
-        delete[] cache;
+        cache.clear();
     }
 
 private:
-    CacheLine** cache; ///< Array of Cache Lines
+    std::vector<std::unique_ptr<CacheLine>> cache; ///< Cache Vector of Cache Lines
     std::list<unsigned> lru_list; ///< List for LRU
 
     /**
@@ -161,7 +157,7 @@ private:
                 return;
             }
 
-            CacheLine* line = cache[index]; ///< Cache Line for the current request
+            CacheLine* line = cache[index].get(); ///< Cache Line for the current request
             if (line == nullptr)
             {
                 std::fprintf(stderr, "Cache Line is null\n");
@@ -239,20 +235,13 @@ private:
 
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(
-                cache, cache + CACHE_LINES, [tag, offset](CacheLine* line)
+                cache.begin(), cache.end(), [tag, offset](const std::unique_ptr<CacheLine>& line)
                 {
                     return line->tag == tag && line->valid[offset];
                 });
 
-            if (linePointer == nullptr)
-            {
-                std::printf("Line Pointer is null\n");
-            }
-
-            std::printf("Line Pointer: %p\n", linePointer);
-
             // Get the index of the line in the cache and add the cache latency to the total cycles
-            int lineIndex = linePointer != cache + CACHE_LINES ? linePointer - cache : -1;
+            int lineIndex = linePointer != cache.end() ? std::distance(cache.begin(), linePointer) : -1;
             size_t cycles = CACHE_LATENCY;
 
             if (lineIndex != -1) ///< Cache hit

@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS = src/frontend/file_processing.c src/frontend/main.c
-CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp src/testing/testbench.cpp
 
 # Compiler and flags
 CC = gcc
@@ -31,6 +31,7 @@ endif
 
 # Executable name
 TARGET = sc_main
+testTARGET = test_main
 
 C_OBJS = $(C_SRCS:.c=.o)
 CPP_OBJS = $(CPP_SRCS:.cpp=.o)
@@ -54,7 +55,7 @@ all: debug
 # Debug build
 debug: CFLAGS += -DDEBUG
 debug: CXXFLAGS += -DDEBUG
-debug: $(TARGET)
+debug: $(testTARGET)
 
 # Release build
 release: CFLAGS += -O2
@@ -64,6 +65,9 @@ release: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(LIBS) $(LDFLAGS)
 
+$(testTARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CPP_OBJS) -o $@ $(LIBS) $(LDFLAGS)
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -72,6 +76,6 @@ $(TARGET): $(OBJS)
 
 # cleans previous builds
 clean:
-	rm -f $(TARGET) $(OBJS) *.vcd
+	rm -f $(TARGET) $(testTARGET) $(OBJS) *.vcd
 
 .PHONY: all debug release clean
