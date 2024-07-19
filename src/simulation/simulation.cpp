@@ -1,10 +1,9 @@
 #include "simulation.h"
+#include "controller.h"
 
 #include <systemc>
 
-#include "controller.h"
-
-
+using namespace sc_core;
 /**
  * Runs the SystemC Cache Simulation
  * @param cycles
@@ -29,12 +28,12 @@ struct Result run_simulation(
     struct Request* requests,
     const char* tracefile)
 {
-    sc_core::sc_clock clk("clk", 1, sc_core::SC_NS); ///< Clock signal
-    sc_core::sc_signal<size_t> cycles_; ///< Cycles signal
-    sc_core::sc_signal<size_t> total_hits; ///< Total Hits signal
-    sc_core::sc_signal<size_t> total_misses; ///< Total Misses signal
-    sc_core::sc_signal<size_t> primitiveGateCount; ///< Primitive Gate Count signal
-    sc_core::sc_signal<Request*> requests_out; ///< Requests Feedback signal
+    sc_clock clk("clk", 1, SC_NS); ///< Clock signal
+    sc_signal<size_t> cycles_; ///< Cycles signal
+    sc_signal<size_t> total_hits; ///< Total Hits signal
+    sc_signal<size_t> total_misses; ///< Total Misses signal
+    sc_signal<size_t> primitiveGateCount; ///< Primitive Gate Count signal
+    sc_signal<Request*> requests_out; ///< Requests Feedback signal
 
     // Create instance of the Controller and Result
     Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency,
@@ -48,15 +47,15 @@ struct Result run_simulation(
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
 
-    sc_core::sc_trace_file* trace = nullptr;
+    sc_trace_file* trace = nullptr;
     if (tracefile)
     {
-        trace = sc_core::sc_create_vcd_trace_file(tracefile);
+        trace = sc_create_vcd_trace_file(tracefile);
         controller.trace_signals(trace);
     }
 
     // Start the simulation and run for the specified number of cycles or until all requests are processed
-    sc_core::sc_start(cycles, sc_core::SC_NS);
+    sc_start(cycles, SC_NS);
 
     if (cycles_.read() < cycles && controller.request_counter < num_Requests)
     {

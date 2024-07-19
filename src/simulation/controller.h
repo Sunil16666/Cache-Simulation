@@ -7,6 +7,8 @@
 #include "memory.h"
 #include "primitiveGateCountCalc.h"
 
+using namespace sc_core;
+
 
 /**
  * Controller Module of the Cache Simulation

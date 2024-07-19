@@ -8,6 +8,8 @@
 #include "cacheLine.h"
 #include "simulation.h"
 
+using namespace sc_core;
+
 /**
  * Cache Module of the Simulation
  */

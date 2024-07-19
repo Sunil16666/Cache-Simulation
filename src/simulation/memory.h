@@ -3,6 +3,8 @@
 #include <map>
 #include <systemc>
 
+using namespace sc_core;
+
 /**
  * Memory Module for the Simulation
  */
