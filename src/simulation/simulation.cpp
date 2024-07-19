@@ -48,6 +48,7 @@ struct Result run_simulation(
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
     controller.cycles_max(cycles_max);
+    cycles_max.write(cycles);
 
     sc_trace_file* trace = nullptr;
     if (tracefile)

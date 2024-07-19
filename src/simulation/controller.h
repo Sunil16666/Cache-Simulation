@@ -191,6 +191,10 @@ private:
         }
         else if (cycles >= cycles_max.read() && request_counter < num_requests)
         {
+            std::printf("Cyles: %lu\n", cycles);
+            std::printf("MAX Cycles: %lu\n", cycles_max.read());
+            std::printf("Request Counter: %lu\n", request_counter);
+            std::printf("numRequests: %lu\n", num_requests);
             std::printf("Simulation did not run for the specified number of cycles\n");
             total_hits.write(hit_count);
             total_misses.write(miss_count);
