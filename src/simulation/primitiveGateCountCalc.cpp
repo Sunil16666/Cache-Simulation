@@ -1,5 +1,6 @@
 #include "primitiveGateCountCalc.h"
 
+#include <cstddef>
 
 /**
  * Function to calculate the number of primitive gates required to implement the cache
