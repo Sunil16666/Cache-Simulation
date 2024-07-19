@@ -17,6 +17,7 @@ class Controller final : public sc_module
 {
 public:
     sc_in<bool> clk; ///< Clock Signal
+    sc_in<size_t> cycles_max; ///< Maximum Cycles Signal
 
     sc_signal<bool> we; ///< Write Enable Signal
     sc_signal<uint32_t> addr; ///< Address Signal
@@ -162,9 +163,10 @@ private:
             }
 
             request_counter++; ///< Increment the request counter
+            is_process_finished(); ///< Check if the process is finished
         }
 
-        // Output the final values to the signals
+        // Output the final values to the signals (cylces equal excatly to the number of max cycles)
         total_hits.write(hit_count); ///< Write the total hits to the output signal
         total_misses.write(miss_count); ///< Write the total misses to the output signal
         cycles_.write(cycles); ///< Write the total cycles to the output signal
@@ -172,6 +174,33 @@ private:
                                                       cache->INDEX_BITS,
                                                       DIRECT_MAPPED)); ///< Calculate and write the primitive gate count
         requests_out.write(requests);
+    }
+
+    void is_process_finished()
+    {
+        if (request_counter >= num_requests)
+        {
+            total_hits.write(hit_count);
+            total_misses.write(miss_count);
+            cycles_.write(cycles);
+            primitiveGateCount.write(::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->TAG_BITS,
+                                                          cache->INDEX_BITS,
+                                                          DIRECT_MAPPED));
+            requests_out.write(requests);
+            sc_stop();
+        }
+        else if (cycles >= cycles_max.read() && request_counter < num_requests)
+        {
+            std::printf("Simulation did not run for the specified number of cycles\n");
+            total_hits.write(hit_count);
+            total_misses.write(miss_count);
+            cycles_.write(SIZE_MAX);
+            primitiveGateCount.write(::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE, cache->TAG_BITS,
+                                                          cache->INDEX_BITS,
+                                                          DIRECT_MAPPED));
+            requests_out.write(requests);
+            sc_stop();
+        }
     }
 };
 

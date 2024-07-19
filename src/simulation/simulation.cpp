@@ -34,6 +34,7 @@ struct Result run_simulation(
     sc_signal<size_t> total_misses; ///< Total Misses signal
     sc_signal<size_t> primitiveGateCount; ///< Primitive Gate Count signal
     sc_signal<Request*> requests_out; ///< Requests Feedback signal
+    sc_signal<size_t> cycles_max; ///< Maximum Cycles signal
 
     // Create instance of the Controller and Result
     Controller controller("controller", directMapped, requests, num_Requests, cacheLines, CacheLineSize, cacheLatency,
@@ -46,6 +47,7 @@ struct Result run_simulation(
     controller.cycles_(cycles_);
     controller.primitiveGateCount(primitiveGateCount);
     controller.requests_out(requests_out);
+    controller.cycles_max(cycles_max);
 
     sc_trace_file* trace = nullptr;
     if (tracefile)
@@ -57,25 +59,10 @@ struct Result run_simulation(
     // Start the simulation and run for the specified number of cycles or until all requests are processed
     sc_start(cycles, SC_NS);
 
-    if (cycles_.read() < cycles && controller.request_counter < num_Requests)
-    {
-        std::printf("Simulation did not run for the specified number of cycles\n");
-        result = {
-            SIZE_MAX,
-            total_hits.read(),
-            total_misses.read(),
-            primitiveGateCount.read()
-        };
-    }
-    else
-    {
-        result = {
-            cycles_.read(),
-            total_hits.read(),
-            total_misses.read(),
-            primitiveGateCount.read()
-        };
-    }
+    result.cycles = cycles_.read();
+    result.hits = total_hits.read();
+    result.misses = total_misses.read();
+    result.primitiveGateCount = primitiveGateCount.read();
 
     if (trace)
     {
