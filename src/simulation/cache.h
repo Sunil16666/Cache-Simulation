@@ -82,20 +82,20 @@ public:
     // Intialize and clean up the Cache
     void initialize()
     {
-        cache.resize(CACHE_LINES);
+        cache.resize(CACHE_LINES); ///< Resize the cache vector to the number of cache lines
         for (unsigned i = 0; i < CACHE_LINES; ++i)
         {
-            cache[i] = std::make_unique<CacheLine>(CACHE_LINE_SIZE);
+            cache[i] = std::make_unique<CacheLine>(CACHE_LINE_SIZE); ///< Create a new Cache Line for each cache line
         }
         if (!DIRECT_MAPPED)
         {
-            initialize_lru_list();
+            initialize_lru_list(); ///< Initialize the LRU List if fully associative
         }
     }
 
     ~Cache() ///< Destructor of the Module
     {
-        cache.clear();
+        cache.clear(); ///< Clear the cache (not necessary because of the use of vectors but better safe than sorry)
     }
 
 private:
@@ -107,8 +107,8 @@ private:
      */
     void initialize_lru_list()
     {
-        lru_list.clear();
-        for (unsigned i = 0; i < CACHE_LINES; ++i)
+        lru_list.clear(); ///< Clear the list (not necessary but better safe than sorry)
+        for (unsigned i = 0; i < CACHE_LINES; ++i) ///< Initialize the list with the indices
         {
             lru_list.push_back(i);
         }
@@ -120,8 +120,8 @@ private:
      */
     void update_lru(unsigned index)
     {
-        lru_list.remove(index);
-        lru_list.push_back(index);
+        lru_list.remove(index); ///< Remove the index from the list
+        lru_list.push_back(index); ///< Push the index to the back of the list (Most Recently Used)
     }
 
     /**
@@ -130,7 +130,7 @@ private:
      */
     unsigned get_lru_index() const
     {
-        return lru_list.front();
+        return lru_list.front(); ///< Return the front of the list (Least Recently Used)
     }
 
     /**
