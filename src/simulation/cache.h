@@ -177,10 +177,12 @@ private:
             }
 
             size_t cycles = CACHE_LATENCY; ///< Add Cache Latency to the total cycles
+            wait(CACHE_LATENCY);
 
             if (we.read()) ///< Write to cache
             {
                 cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                wait(MEMORY_LATENCY);
                 if (line->tag == tag && line->valid[offset]) ///< Cache hit
                 {
                     hit.write(true); ///< Hit Signal (true)
@@ -212,6 +214,7 @@ private:
                 else ///< Cache miss
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    wait(MEMORY_LATENCY);
                     hit.write(false); ///< Hit Signal (false)
 
                     memory_addr.write(addr.read()); ///< Address to memory
@@ -266,6 +269,7 @@ private:
             // Get the index of the line in the cache and add the cache latency to the total cycles
             int lineIndex = linePointer != cache.end() ? std::distance(cache.begin(), linePointer) : -1;
             size_t cycles = CACHE_LATENCY;
+            wait(CACHE_LATENCY);
 
             if (lineIndex != -1) ///< Cache hit
             {
@@ -295,6 +299,7 @@ private:
                 if (we.read()) ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    wait(MEMORY_LATENCY);
 
                     cache[lru_pointer]->tag = tag; ///< Update the tag
                     cache[lru_pointer]->data[offset] = wdata.read(); ///< Write the data to the cache
@@ -310,6 +315,7 @@ private:
                 else
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+                    wait(MEMORY_LATENCY);
                     memory_addr.write(addr.read()); ///< Address to memory
                     memory_we.write(false); ///< Disable write to memory (read from memory)
 
