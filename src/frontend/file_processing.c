@@ -40,22 +40,40 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
         char type[2];
         unsigned int addr;
         unsigned int data;
+        int items;
 
         #ifdef DEBUG
         printf("Reading line: %s", line);
         #endif
 
-        int items = sscanf(line, "%1s,%10x,%10u", type, &addr, &data);
+        if (sscanf(line, "%1s", type) != 1) {
+            fprintf(stderr, "Failed to read request type: %s\n", line);
+            continue;
+        }
+
+        if (type[0] == 'W') {
+            items = sscanf(line, "%1s,%x,%u", type, &addr, &data);
+            if (items != 3) {
+                fprintf(stderr, "Incorrect format for write request: %s\n", line);
+                continue;
+            }
+        } else if (type[0] == 'R') {
+            items = sscanf(line, "%1s,%x", type, &addr);
+            if (items != 2) {
+                fprintf(stderr, "Incorrect format for read request: %s\n", line);
+                continue;
+            }
+            data = 0; // For read requests, data is not used.
+        } else {
+            fprintf(stderr, "Unknown request type: %s\n", line);
+            continue;
+        }
+
+        // = sscanf(line, "%1s,%10x,%10u", type, &addr, &data);
 
         #ifdef DEBUG
         printf("Parsed items: %d\n", items);
         #endif
-
-        if (items != 3)
-        {
-            fprintf(stderr, "Incorrect format: %s\n", line);
-            continue;
-        }
 
         if (addr > UINT32_MAX || data > UINT32_MAX)
         {
