@@ -4,6 +4,8 @@
 #include <list>
 #include <queue>
 #include <systemc>
+#include <memory>
+#include <vector>
 
 #include "cacheLine.h"
 #include "simulation.h"
