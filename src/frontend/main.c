@@ -70,7 +70,7 @@ int toSanitizedInt(const char *optarg, int *result) {
 int main(int argc, char *argv[]) {
     // Default values for simulation parameters
     int cycles = 100;
-    int directMapped = 0;
+    int directMapped = 0; //if directMapped & fullassociative are 0 the simulation will run fullassociative as default
     int fullassociative = 0;
     unsigned cacheLineSize = 64;
     unsigned cacheLines = 128;
@@ -218,6 +218,7 @@ size_t num_Requests;
 //Positional parameter handling
 if (optind < argc) {
 	input_file_path = argv[optind];
+
 	#ifdef DEBUG
 	printf("Input file: %s\n", input_file_path);
 	#endif
