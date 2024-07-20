@@ -4,6 +4,7 @@
 #include <systemc>
 
 using namespace sc_core;
+
 /**
  * Runs the SystemC Cache Simulation
  * @param cycles
