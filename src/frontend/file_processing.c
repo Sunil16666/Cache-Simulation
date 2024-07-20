@@ -41,6 +41,7 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
         unsigned int addr;
         unsigned int data;
         int items;
+        char commaCheck;
 
         #ifdef DEBUG
         printf("Reading line: %s", line);
@@ -55,17 +56,20 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
             items = sscanf(line, "%1s,%x,%u", type, &addr, &data);
             if (items != 3) {
                 fprintf(stderr, "Incorrect format for write request: %s\n", line);
+                exit(1);
                 continue;
             }
         } else if (type[0] == 'R') {
-            items = sscanf(line, "%1s,%x", type, &addr);
-            if (items != 2) {
-                fprintf(stderr, "Incorrect format for read request: %s\n", line);
+            items = sscanf(line, "%1s,%x,%c", type, &addr, &commaCheck);
+            if (items != 3 || commaCheck != ',') {
+                fprintf(stderr, "Incorrect format for read request (data should be empty): %s\n", line);
+                exit(1);
                 continue;
             }
             data = 0; // For read requests, data is not used.
         } else {
             fprintf(stderr, "Unknown request type: %s\n", line);
+            exit(1);
             continue;
         }
 
