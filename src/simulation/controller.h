@@ -116,7 +116,6 @@ public:
         sc_trace(trace_file, memory_wdata, "memory_wdata");
         sc_trace(trace_file, memory_addr, "memory_addr");
         sc_trace(trace_file, memory_we, "memory_we");
-        sc_trace(trace_file, requests_out, "requests_out");
         sc_trace(trace_file, total_hits, "total_hits");
         sc_trace(trace_file, total_misses, "total_misses");
         sc_trace(trace_file, cycles_, "cycles");
@@ -145,11 +144,12 @@ private:
             data.write(request.data);
             we.write(request.we);
 
-            // Wait for the Cache to process the request (one cycle)
-            wait(clk.posedge_event());
+            // Wait for the Cache to process the request and get the result
+            wait(cache->finishedProcessingEvent);
             if (!request.we)
             {
                 requests[request_counter].data = rdata.read();
+                std::printf("Read Data: %u\n", rdata.read());
             }
 
             cycles += cycles_per_request.read(); ///< Increment the number of cycles per request

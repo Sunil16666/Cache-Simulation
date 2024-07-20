@@ -40,6 +40,9 @@ public:
     sc_out<uint32_t> memory_wdata; ///< Write Data Signal to Memory
     sc_out<bool> memory_we; ///< Write Enable Signal to Memory
 
+    sc_event finishedProcessingEvent; ///< Event for finished processing one request
+
+
     SC_HAS_PROCESS(Cache); ///< Macro for multiple-argument constructor of the Module
 
     /**
@@ -135,35 +138,42 @@ private:
     {
         while (true)
         {
-            std::printf("Process Direct Mapped\n");
             wait(clk.posedge_event());
+            std::printf("Process Direct Mapped\n");
 
             uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
-            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);
-            ///< Index for current request
+            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);///< Index for current request
             uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS); ///< Tag for current request
 
             if (index >= CACHE_LINES)
             {
                 std::fprintf(stderr, "Index out of bounds\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
             if (tag >= (1 << TAG_BITS))
             {
                 std::fprintf(stderr, "Tag out of bounds\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
             if (offset >= CACHE_LINE_SIZE)
             {
                 std::fprintf(stderr, "Offset out of bounds\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
 
             CacheLine* line = cache[index].get(); ///< Cache Line for the current request
+            std::printf("Cache Line Data: %u\n", line->data[offset]);
+            std::printf("Cache Line Tag: %u\n", line->tag);
+            std::printf("Cache Line Valid: %u\n", line->valid[offset]);
+            std::printf("Cache Line Offset: %u\n", offset);
             if (line == nullptr)
             {
                 std::fprintf(stderr, "Cache Line is null\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
 
             size_t cycles = CACHE_LATENCY; ///< Add Cache Latency to the total cycles
@@ -178,36 +188,48 @@ private:
                 else ///< Cache miss
                 {
                     hit.write(false); ///< Hit Signal (false)
+
                     line->tag = tag; ///< Update the tag
                     line->valid[offset] = true; ///< Set the valid bit
+                    line->data[offset] = wdata.read(); ///< Write the data to the cache
                 }
-                line->data[offset] = wdata.read(); ///< Write the data to the cache
                 memory_addr.write(addr.read()); ///< Address to memory
                 memory_wdata.write(wdata.read()); ///< Write data to memory
                 memory_we.write(true); ///< Enable write to memory
             }
             else ///< Read from cache
             {
+                std::printf("Read from cache\n");
                 if (line->tag == tag && line->valid[offset]) ///< Cache hit
                 {
                     hit.write(true); ///< Hit Signal (true)
-                    rdata.write(line->data[offset]); ///< Read the data from the cache
+                    uint32_t data = line->data[offset]; ///< Read the data from the cache
+                    std::printf("data %u\n", data);
+                    rdata.write(data); ///< Write the data to the read data signal
+                    wait(SC_ZERO_TIME);
+                    std::printf("rdata: %u\n", rdata.read());
                 }
                 else ///< Cache miss
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
                     hit.write(false); ///< Hit Signal (false)
+
                     memory_addr.write(addr.read()); ///< Address to memory
                     memory_we.write(false); ///< Disable write to memory (read from memory)
+
                     wait(clk.posedge_event()); ///< Wait for memory to provide data
                     uint32_t memory_data = memory_rdata.read(); ///< Read the data from memory
                     rdata.write(memory_data); ///< Write the data to the read data signal
+                    wait(SC_ZERO_TIME);
+
                     line->valid[offset] = true; ///< Set the valid bit
                     line->tag = tag; ///< Update the tag
                     line->data[offset] = memory_data; ///< Write the data to the cache
                 }
             }
             cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
+
+            finishedProcessingEvent.notify(SC_ZERO_TIME);
         }
     }
 
@@ -253,8 +275,9 @@ private:
                 {
                     cycles += MEMORY_LATENCY;
                     wait(MEMORY_LATENCY);
-                    cache[lineIndex]->data[offset] = wdata.read(); ///< Write the data to the cache
+
                     cache[lineIndex]->valid[offset] = true; ///< Set the valid bit
+
                     memory_addr.write(addr.read()); ///< Address to memory
                     memory_wdata.write(wdata.read()); ///< Write data to memory
                     memory_we.write(true); ///< Enable write to memory
@@ -272,12 +295,15 @@ private:
                 if (we.read()) ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
+
                     cache[lru_pointer]->tag = tag; ///< Update the tag
                     cache[lru_pointer]->data[offset] = wdata.read(); ///< Write the data to the cache
                     cache[lru_pointer]->valid[offset] = true; ///< Set the valid bit
+
                     memory_addr.write(addr.read()); ///< Address to memory
                     memory_wdata.write(wdata.read()); ///< Write data to memory
                     memory_we.write(true); ///< Enable write to memory
+
                     update_lru(lru_pointer); ///< Update the LRU list
                 }
                 else
@@ -285,9 +311,12 @@ private:
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
                     memory_addr.write(addr.read()); ///< Address to memory
                     memory_we.write(false); ///< Disable write to memory (read from memory)
+
                     wait(clk.posedge_event()); ///< Wait for memory to provide data
+
                     uint32_t memory_data = memory_rdata.read(); ///< Read the data from memory
                     rdata.write(memory_data); ///< Write the data to the read data signal
+
                     cache[lru_pointer]->tag = tag; ///< Update the tag
                     cache[lru_pointer]->data[offset] = memory_data; ///< Write the data to the cache
                     cache[lru_pointer]->valid[offset] = true; ///< Set the valid bit
