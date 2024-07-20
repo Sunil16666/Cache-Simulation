@@ -39,5 +39,13 @@ unsigned comparatorGateCount(unsigned tagBits);
  */
 unsigned storageGateCount(unsigned CacheLineSize, unsigned cacheLines, unsigned tagBits);
 
+/**
+ * A helper function prototype to calculate the number of primitive gates required to implement the LRU gate
+ * @param cacheLines
+ * @param tagBits
+ * @return Number of primitive gates
+ */
+unsigned lruGateCount(unsigned const cacheLines, unsigned const tagBits);
+
 
 #endif //PRIMITIVEGATECOUNTCALC_H

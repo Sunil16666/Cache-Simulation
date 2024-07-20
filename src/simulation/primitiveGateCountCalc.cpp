@@ -81,3 +81,20 @@ unsigned storageGateCount(unsigned const CacheLineSize, unsigned const cacheLine
     // Total number of transistors
     return cacheLines * transistors_per_line;
 }
+
+/**
+ * A helper function to calculate the number of primitive gates required to implement the LRU logic
+ * @param cacheLines
+ * @param tagBits
+ * @return Number of primitive gates
+ */
+unsigned lruGateCount(unsigned const cacheLines, unsigned const tagBits)
+{
+    // LRU update logic estimation
+    unsigned const comparatorGateCount = ::comparatorGateCount(tagBits) * cacheLines;
+
+    // Estimate for control logic gates for LRU (this is a simplification)
+    unsigned const lruLogicGateCount = cacheLines * 10;
+
+    return comparatorGateCount + lruLogicGateCount;
+}
