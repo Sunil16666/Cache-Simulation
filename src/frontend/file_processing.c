@@ -39,44 +39,41 @@ void getRequests(const FileProcessing* fileProc, size_t* numRequests, Request** 
     {
         char type[2];
         unsigned int addr;
-        unsigned int data;
+        unsigned int data = 0;
         int items;
-        char commaCheck;
+        char dataStr[256] = {0};
 
         #ifdef DEBUG
         printf("Reading line: %s", line);
         #endif
 
-        if (sscanf(line, "%1s", type) != 1) {
-            fprintf(stderr, "Failed to read request type: %s\n", line);
+        if (sscanf(line, "%1s,%x,%255s", type, &addr, dataStr) < 2) {
+            fprintf(stderr, "Failed to parse line: %s\n", line);
+            exit(1);
             continue;
         }
 
         if (type[0] == 'W') {
-            items = sscanf(line, "%1s,%x,%u", type, &addr, &data);
-            if (items != 3) {
+            if (sscanf(dataStr, "%u", &data) != 1) {
                 fprintf(stderr, "Incorrect format for write request: %s\n", line);
                 exit(1);
                 continue;
             }
         } else if (type[0] == 'R') {
-            items = sscanf(line, "%1s,%x,%c", type, &addr, &commaCheck);
-            if (items != 3 || commaCheck != ',') {
+            if (dataStr[0] != '\0') {  // Check if the data field is not empty
                 fprintf(stderr, "Incorrect format for read request (data should be empty): %s\n", line);
                 exit(1);
                 continue;
             }
-            data = 0; // For read requests, data is not used.
+            data = 0; // Data is empty for read requests
         } else {
             fprintf(stderr, "Unknown request type: %s\n", line);
             exit(1);
             continue;
         }
 
-        // = sscanf(line, "%1s,%10x,%10u", type, &addr, &data);
-
         #ifdef DEBUG
-        printf("Parsed items: %d\n", items);
+            printf("Parsed type: %s, addr: %x, data: %u\n", type, addr, data);
         #endif
 
         if (addr > UINT32_MAX || data > UINT32_MAX)
