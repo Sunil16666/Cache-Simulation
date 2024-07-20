@@ -228,8 +228,7 @@ private:
                 }
             }
             cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
-
-            finishedProcessingEvent.notify(SC_ZERO_TIME);
+            finishedProcessingEvent.notify(SC_ZERO_TIME); ///< Notify the finished processing event
         }
     }
 
@@ -246,15 +245,15 @@ private:
             uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
             uint32_t tag = addr.read() >> OFFSET_BITS; ///< Tag for current request
 
-            if (tag >= (1 << TAG_BITS))
-            {
+            if (tag >= (1 << TAG_BITS)) {
                 std::fprintf(stderr, "Tag out of bounds\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
-            if (offset >= CACHE_LINE_SIZE)
-            {
+            if (offset >= CACHE_LINE_SIZE) {
                 std::fprintf(stderr, "Offset out of bounds\n");
-                return;
+                finishedProcessingEvent.notify(SC_ZERO_TIME);
+                continue;
             }
 
             // Find the line in the cache that contains the tag and the offset
@@ -285,6 +284,7 @@ private:
                 else
                 {
                     rdata.write(cache[lineIndex]->data[offset]); ///< Read the data from the cache
+                    wait(SC_ZERO_TIME);
                 }
             }
             else
@@ -305,6 +305,7 @@ private:
                     memory_we.write(true); ///< Enable write to memory
 
                     update_lru(lru_pointer); ///< Update the LRU list
+                    wait(SC_ZERO_TIME);
                 }
                 else
                 {
@@ -316,14 +317,17 @@ private:
 
                     uint32_t memory_data = memory_rdata.read(); ///< Read the data from memory
                     rdata.write(memory_data); ///< Write the data to the read data signal
+                    wait(SC_ZERO_TIME);
 
                     cache[lru_pointer]->tag = tag; ///< Update the tag
                     cache[lru_pointer]->data[offset] = memory_data; ///< Write the data to the cache
                     cache[lru_pointer]->valid[offset] = true; ///< Set the valid bit
                     update_lru(lru_pointer); ///< Update the LRU list
+                    wait(SC_ZERO_TIME);
                 }
             }
             cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
+            finishedProcessingEvent.notify(SC_ZERO_TIME); ///< Notify the finished processing event
         }
     }
 };
