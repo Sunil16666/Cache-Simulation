@@ -25,6 +25,7 @@ size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSiz
                                              ? ::comparatorGateCount(tagBits)
                                              : ::comparatorGateCount(tagBits) * cacheLines;
     unsigned const storageGateCount = ::storageGateCount(CacheLineSize, cacheLines, tagBits);
+    unsigned const lruGateCount = ::lruGateCount(cacheLines, tagBits);
 
     // If direct mapped, we need the mux, comparator, and storage gates
     if (directMapped)
@@ -33,7 +34,7 @@ size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSiz
     }
 
     // Total number of primitive gates
-    return comparatorGateCount + storageGateCount + 1; ///< One OR gate (N-Inputs) using the comparator outputs
+    return comparatorGateCount + storageGateCount + 1 + lruGateCount; ///< One OR gate (N-Inputs) using the comparator outputs
 }
 
 /**
