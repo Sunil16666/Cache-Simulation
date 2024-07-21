@@ -69,11 +69,11 @@ int toSanitizedInt(const char *optarg, int *result) {
 
 int main(int argc, char *argv[]) {
     // Default values for simulation parameters
-    int cycles = 10000;
+    int cycles = 1000;
     int directMapped = 0; //if directMapped & fullassociative are 0 the simulation will run fullassociative as default
     int fullassociative = 0;
-    unsigned cacheLineSize = 64;
-    unsigned cacheLines = 128;
+    unsigned cacheLineSize = 8;
+    unsigned cacheLines = 16;
     unsigned cacheLatency = 2;
     unsigned memoryLatency = 10;
     const char *tracefile = NULL;
@@ -189,7 +189,8 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "  --cache-latency <latency>  Set the cache latency\n");
                 fprintf(stderr, "  --memory-latency <latency> Set the memory latency\n");
                 fprintf(stderr, "  --tf=<filename>            Set the trace file name\n");
-                fprintf(stderr, "  -h, --help                 Display this help and exit\n");
+          		fprintf(stderr, "  <filename>                 Positional Argument: Set the input file path\n");
+            	fprintf(stderr, "  -h, --help                 Display this help and exit\n");
                 return 0;
             }
             case 'i': //--tf=<filename>
