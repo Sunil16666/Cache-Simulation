@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
             {
 				if(toSanitizedInt(optarg, &number_input) == 0) {
 				#ifdef DEBUG
-                printf("cacheline-size %s\n", number_input);
+                printf("cacheline-size %d\n", number_input);
 				#endif
 
                 cacheLineSize = number_input;
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
             {
 				if(toSanitizedInt(optarg, &number_input) == 0) {
 				#ifdef DEBUG
-				printf("cachelines: %s\n", number_input);
+				printf("cachelines: %d\n", number_input);
 				#endif
                 cacheLines = number_input;
 				} else {
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
             {
 				if(toSanitizedInt(optarg, &number_input) == 0) {
 				#ifdef DEBUG
-				printf("cache-latency: %s\n", number_input);
+				printf("cache-latency: %d\n", number_input);
 				#endif
                 cacheLatency = number_input;
 				} else {
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
             {
 				if(toSanitizedInt(optarg, &number_input) == 0) {
 				#ifdef DEBUG
-				printf("memory-latency: %s\n",number_input);
+				printf("memory-latency: %d\n",number_input);
 				#endif
                 memoryLatency = number_input;
 				} else {
@@ -213,47 +213,53 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-Request* requests;
-size_t num_Requests;
+    struct Request* requests = NULL;
+    size_t num_Requests = 0;
 
-//Positional parameter handling
-if (optind < argc) {
-	input_file_path = argv[optind];
+    //Positional parameter handling
+    if (optind < argc)
+    {
+	    input_file_path = argv[optind];
 
-	#ifdef DEBUG
-	printf("Input file: %s\n", input_file_path);
-	#endif
+		#ifdef DEBUG
+	    printf("Input file: %s\n", input_file_path);
+		#endif
 
-	FileProcessing* fileProc = createFileProcessing(input_file_path);
-	if (!fileProc) {
-        fprintf(stderr, "Failed to initialize FileProcessing.\n");
-        return 1;
+	    FileProcessing* fileProc = createFileProcessing(input_file_path);
+	    if (!fileProc)
+	    {
+		    fprintf(stderr, "Failed to initialize FileProcessing.\n");
+		    return 1;
+	    }
+
+	    getRequests(fileProc, &num_Requests, &requests);
+
+	    if (num_Requests > 0 && requests != NULL)
+	    {
+			#ifdef DEBUG
+		    printf("Fetched %zu requests:\n", num_Requests);
+		    for (size_t i = 0; i < num_Requests; i++)
+		    {
+			    printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+			           i, requests[i].addr, requests[i].data, requests[i].we);
+		    }
+			#endif
+	    }
+	    else
+	    {
+		    printf("No requests fetched or an error occurred.\n");
+		    return 1;
+	    }
+	    // Clean up
+	    deleteFileProcessing(fileProc);
     }
 
-	getRequests(fileProc, &num_Requests, &requests);
-
-	if (num_Requests > 0 && requests != NULL) {
-		#ifdef DEBUG
-        printf("Fetched %zu requests:\n", num_Requests);
-        for (size_t i = 0; i < num_Requests; i++) {
-            printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
-				i, requests[i].addr, requests[i].data, requests[i].we);
-        }
-		#endif
-    } else {
-		printf("No requests fetched or an error occurred.\n");
-		return 1;
-	}
-    // Clean up
-    deleteFileProcessing(fileProc);
-}
-
-	// Simulation
+    // Simulation
     struct Result result = run_simulation(
-    	cycles, directMapped, cacheLines, cacheLineSize,
-    	cacheLatency, memoryLatency, num_Requests,
-    	requests, tracefile
-    	);
+	    cycles, directMapped, cacheLines, cacheLineSize,
+	    cacheLatency, memoryLatency, num_Requests,
+	    requests, tracefile
+    );
 
     // Results
     printf("Simulation Results:\n");
@@ -261,13 +267,15 @@ if (optind < argc) {
     printf("Misses: %zu\n", result.misses);
     printf("Hits: %zu\n", result.hits);
     printf("Primitive Gate Count: %zu\n", result.primitiveGateCount);
-	printf("Number of Requests: %zu\n", num_Requests);
+    printf("Number of Requests: %zu\n", num_Requests);
 
-	// print requests
-	for (size_t i = 0; i < num_Requests; i++) {
-		printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
-			i, requests[i].addr, requests[i].data, requests[i].we);
-	}
+    // print requests
+    for (size_t i = 0; i < num_Requests; i++)
+    {
+	    printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+	           i, requests[i].addr, requests[i].data, requests[i].we);
+    }
 
-	return 0;
+	free(requests);
+    return 0;
 }
