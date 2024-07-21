@@ -1,4 +1,6 @@
-# Typische Größen
+# Cache-Simulation
+
+## Typische Größen von Caches
 
 L1- und L2-Cache, jeweils 32KB und 256KB. Der größte Cache, L3, wird über alle CPU-Kerne geteilt und hat eine Kapazität von 8MB. Da L1 Caches typischerweise Direct Mapped sind, und L3 8 fach assoziativ oder Vollassoziativ sind, stellen wir fest, dass in CPUs, schnelle, Direct Mapped Caches eine Tendenz haben, kleiner zu sein.
 
