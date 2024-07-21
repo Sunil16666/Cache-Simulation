@@ -44,4 +44,4 @@ Dies bedeutet, dass wir eine Beschleunigung von bis zu 15x beobachten! (Wir stel
 
 **Jonas:** “main.c”, “file_processing.c” und “matrix_multiplication.c”
 
-(Quellen sind in der "Sources" in der Präsentation)
+(Quellen sind unter der "Sources" slide, in der Präsentation(slides/slides.pdf))
