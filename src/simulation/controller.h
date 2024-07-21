@@ -149,7 +149,7 @@ private:
             if (!request.we)
             {
                 requests[request_counter].data = rdata.read();
-                std::printf("Read Data: %u\n", rdata.read());
+                // std::printf("Read Data: %u\n", rdata.read());
             }
 
             cycles += cycles_per_request.read(); ///< Increment the number of cycles per request
@@ -167,13 +167,13 @@ private:
         }
 
         // Output the final values to the signals (cylces equal excatly to the number of max cycles)
-        std::cout << "Simulation finished" << std::endl;
-        std::cout << "Total Hits: " << hit_count << std::endl;
-        std::cout << "Total Misses: " << miss_count << std::endl;
-        std::cout << "Total Cycles: " << cycles << std::endl;
-        std::cout << "Primitive Gate Count: " << ::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE,
-                                                                      cache->TAG_BITS, cache->INDEX_BITS,
-                                                                      DIRECT_MAPPED) << std::endl;
+        // std::cout << "Simulation finished" << std::endl;
+        // std::cout << "Total Hits: " << hit_count << std::endl;
+        // std::cout << "Total Misses: " << miss_count << std::endl;
+        // std::cout << "Total Cycles: " << cycles << std::endl;
+        // std::cout << "Primitive Gate Count: " << ::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE,
+        //                                                               cache->TAG_BITS, cache->INDEX_BITS,
+        //                                                                DIRECT_MAPPED) << std::endl;
         total_hits.write(hit_count); ///< Write the total hits to the output signal
         total_misses.write(miss_count); ///< Write the total misses to the output signal
         cycles_.write(cycles); ///< Write the total cycles to the output signal
@@ -185,12 +185,12 @@ private:
 
     void is_process_finished()
     {
-        std::cout << "Request Counter: " << request_counter << std::endl;
-        std::cout << "Num Requests: " << num_requests << std::endl;
-        std::cout << "Cycles: " << cycles << std::endl;
+        // std::cout << "Request Counter: " << request_counter << std::endl;
+        // std::cout << "Num Requests: " << num_requests << std::endl;
+        // std::cout << "Cycles: " << cycles << std::endl;
         if (request_counter >= num_requests)
         {
-            std::cout << "Simulation finished, all requests processed" << std::endl;
+            // std::cout << "Simulation finished, all requests processed" << std::endl;
             total_hits.write(hit_count);
             total_misses.write(miss_count);
             cycles_.write(cycles);
@@ -202,11 +202,11 @@ private:
         }
         else if (cycles >= cycles_max.read() && request_counter < num_requests)
         {
-            std::printf("Cyles: %lu\n", cycles);
-            std::printf("MAX Cycles: %lu\n", cycles_max.read());
-            std::printf("Request Counter: %lu\n", request_counter);
-            std::printf("numRequests: %lu\n", num_requests);
-            std::printf("Simulation did not run for the specified number of cycles\n");
+            // std::printf("Cyles: %lu\n", cycles);
+            // std::printf("MAX Cycles: %lu\n", cycles_max.read());
+            // std::printf("Request Counter: %lu\n", request_counter);
+            // std::printf("numRequests: %lu\n", num_requests);
+            // std::printf("Simulation did not run for the specified number of cycles\n");
             total_hits.write(hit_count);
             total_misses.write(miss_count);
             cycles_.write(SIZE_MAX);

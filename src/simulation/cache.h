@@ -141,11 +141,11 @@ private:
         while (true)
         {
             wait(clk.posedge_event());
-            std::printf("Process Direct Mapped\n");
+            // std::printf("Process Direct Mapped\n");
 
             uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
-            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);
             ///< Index for current request
+            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);
             uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS); ///< Tag for current request
 
             if (index >= CACHE_LINES)
@@ -168,10 +168,10 @@ private:
             }
 
             CacheLine* line = cache[index].get(); ///< Cache Line for the current request
-            std::printf("Cache Line Data: %u\n", line->data[offset]);
-            std::printf("Cache Line Tag: %u\n", line->tag);
-            std::printf("Cache Line Valid: %u\n", line->valid[offset]);
-            std::printf("Cache Line Offset: %u\n", offset);
+            // std::printf("Cache Line Data: %u\n", line->data[offset]);
+            // std::printf("Cache Line Tag: %u\n", line->tag);
+            // std::printf("Cache Line Valid: %u\n", line->valid[offset]);
+            // std::printf("Cache Line Offset: %u\n", offset);
             if (line == nullptr)
             {
                 std::fprintf(stderr, "Cache Line is null\n");
@@ -242,7 +242,7 @@ private:
     {
         while (true)
         {
-            std::printf("Process Fully Associative\n");
+            // std::printf("Process Fully Associative\n");
             wait(clk.posedge_event());
 
             uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
@@ -261,8 +261,8 @@ private:
                 continue;
             }
 
-            std::cout << "Cycle: " << sc_time_stamp() << " Addr: " << addr.read() << " Data: " << wdata.read() <<
-                " WE: " << we.read() << std::endl;
+            // std::cout << "Cycle: " << sc_time_stamp() << " Addr: " << addr.read() << " Data: " << wdata.read() <<
+            //    " WE: " << we.read() << std::endl;
 
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(
@@ -274,18 +274,18 @@ private:
             // Get the index of the line in the cache and add the cache latency to the total cycles
             int lineIndex = linePointer != cache.end() ? std::distance(cache.begin(), linePointer) : -1;
             size_t cycles = CACHE_LATENCY;
-            std::cout << "Cycle: " << sc_time_stamp() << " Line Index: " << lineIndex << std::endl;
+            // std::cout << "Cycle: " << sc_time_stamp() << " Line Index: " << lineIndex << std::endl;
 
             if (lineIndex != -1) ///< Cache hit
             {
-                std::cout << "Cycle: " << sc_time_stamp() << " Cache Hit" << std::endl;
+                // std::cout << "Cycle: " << sc_time_stamp() << " Cache Hit" << std::endl;
                 hit.write(true); ///< Hit Signal (true)
                 if (we.read()) ///< Write to cache
                 {
-                    std::cout << "Cycle: " << sc_time_stamp() << " Write to Cache" << std::endl;
+                    // std::cout << "Cycle: " << sc_time_stamp() << " Write to Cache" << std::endl;
                     cycles += MEMORY_LATENCY;
-                    std::cout << "Cycle: " << sc_time_stamp() << " Memory Latency" << std::endl;
-                    std::cout << "Cycle: " << sc_time_stamp() << " Write to Cache still" << std::endl;
+                    // std::cout << "Cycle: " << sc_time_stamp() << " Memory Latency" << std::endl;
+                    // std::cout << "Cycle: " << sc_time_stamp() << " Write to Cache still" << std::endl;
 
                     cache[lineIndex]->valid[offset] = true; ///< Set the valid bit
 
@@ -295,17 +295,17 @@ private:
                 }
                 else
                 {
-                    std::cout << "Cycle: " << sc_time_stamp() << " Read from Cache" << std::endl;
+                    // std::cout << "Cycle: " << sc_time_stamp() << " Read from Cache" << std::endl;
                     rdata.write(cache[lineIndex]->data[offset]); ///< Read the data from the cache
                     wait(SC_ZERO_TIME);
                 }
             }
             else
             {
-                std::cout << "Cycle: " << sc_time_stamp() << " Cache Miss" << std::endl;
+                // std::cout << "Cycle: " << sc_time_stamp() << " Cache Miss" << std::endl;
                 hit.write(false); ///< Cache miss
                 const uint32_t lru_pointer = get_lru_index(); ///< Get the LRU index
-                std::printf("LRU Pointer: %d\n", lru_pointer);
+                // std::printf("LRU Pointer: %d\n", lru_pointer);
                 if (we.read()) ///< Write to cache
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
@@ -340,7 +340,7 @@ private:
                     wait(SC_ZERO_TIME);
                 }
             }
-            std::cout << "Cycle: " << sc_time_stamp() << " Cycles_total: " << cycles << std::endl;
+            // std::cout << "Cycle: " << sc_time_stamp() << " Cycles_total: " << cycles << std::endl;
             cycles_total.write(cycles); ///< Write the total cycles to the cycles signal
             finishedProcessingEvent.notify(SC_ZERO_TIME); ///< Notify the finished processing event
         }
