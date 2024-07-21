@@ -179,12 +179,10 @@ private:
             }
 
             size_t cycles = CACHE_LATENCY; ///< Add Cache Latency to the total cycles
-            wait(CACHE_LATENCY);
 
             if (we.read()) ///< Write to cache
             {
                 cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
-                wait(MEMORY_LATENCY);
                 if (line->tag == tag && line->valid[offset]) ///< Cache hit
                 {
                     hit.write(true); ///< Hit Signal (true)
@@ -216,7 +214,6 @@ private:
                 else ///< Cache miss
                 {
                     cycles += MEMORY_LATENCY; ///< Add Memory Latency to the total cycles
-                    wait(MEMORY_LATENCY);
                     hit.write(false); ///< Hit Signal (false)
 
                     memory_addr.write(addr.read()); ///< Address to memory
