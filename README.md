@@ -40,7 +40,8 @@ Dies bedeutet, dass wir eine Beschleunigung von bis zu 15x beobachten! (Wir stel
 
 **Linus:**
 
-**Yannick:** Java-Prototypen gebaut, Programmstruktur und Implementierung definiert und festgestellt, theoretischer Teil (Readme.md), Präsentation erstellt, Ergebnisdaten verarbeitet, “file_processing.cpp”, “matrix_multiplaction.cpp”
+**Yannick:** 
+Ich habe die java prototypen erstellt um die programstruktur und die implementiereung fest zu stellen, damit wir unser c/c++ projekt nach was modellieren könnten, damit auch frühe drafts von die cache algorithmen bevor Linus übernommen hat. Ich habe auch den theoretischen teil gemacht, den README erstellt und die presenatation gemacht, wozu ich auch unser ergebnis daten verarbeitet habe. Ich habe Auch file_processing.cpp/c und data_gen.cpp/c erstellt.
 
 **Jonas:** “main.c”, “file_processing.c” und “matrix_multiplication.c”
 
