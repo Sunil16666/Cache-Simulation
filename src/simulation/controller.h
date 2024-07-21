@@ -172,8 +172,8 @@ private:
         std::cout << "Total Misses: " << miss_count << std::endl;
         std::cout << "Total Cycles: " << cycles << std::endl;
         std::cout << "Primitive Gate Count: " << ::primitiveGateCount(cache->CACHE_LINES, cache->CACHE_LINE_SIZE,
-                                                                    cache->TAG_BITS, cache->INDEX_BITS,
-                                                                    DIRECT_MAPPED) << std::endl;
+                                                                      cache->TAG_BITS, cache->INDEX_BITS,
+                                                                      DIRECT_MAPPED) << std::endl;
         total_hits.write(hit_count); ///< Write the total hits to the output signal
         total_misses.write(miss_count); ///< Write the total misses to the output signal
         cycles_.write(cycles); ///< Write the total cycles to the output signal

@@ -34,7 +34,8 @@ size_t primitiveGateCount(unsigned const cacheLines, unsigned const CacheLineSiz
     }
 
     // Total number of primitive gates
-    return comparatorGateCount + storageGateCount + 1 + lruGateCount; ///< One OR gate (N-Inputs) using the comparator outputs
+    return comparatorGateCount + storageGateCount + 1 + lruGateCount;
+    ///< One OR gate (N-Inputs) using the comparator outputs
 }
 
 /**

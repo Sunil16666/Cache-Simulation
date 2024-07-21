@@ -26,7 +26,9 @@ struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request* requests,
+    struct Request* requests, // Wir haben struct Request requests [num_Requests] zu struct Request* requests geändert,
+    // da die ursprüngliche Schreibweise kompilerbedingt nicht funktioniert hat.
+    // Die vorherige Schreibweise gehört nicht zum standard.
     const char* tracefile)
 {
     sc_clock clk("clk", 1, SC_NS); ///< Clock signal

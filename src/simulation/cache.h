@@ -144,7 +144,8 @@ private:
             std::printf("Process Direct Mapped\n");
 
             uint32_t const offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
-            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);///< Index for current request
+            uint32_t const index = (addr.read() >> OFFSET_BITS) & ((1 << INDEX_BITS) - 1);
+            ///< Index for current request
             uint32_t const tag = addr.read() >> (OFFSET_BITS + INDEX_BITS); ///< Tag for current request
 
             if (index >= CACHE_LINES)
@@ -247,18 +248,21 @@ private:
             uint32_t offset = addr.read() & ((1 << OFFSET_BITS) - 1); ///< Offset for current request
             uint32_t tag = addr.read() >> OFFSET_BITS; ///< Tag for current request
 
-            if (tag >= (1 << TAG_BITS)) {
+            if (tag >= (1 << TAG_BITS))
+            {
                 std::fprintf(stderr, "Tag out of bounds\n");
                 finishedProcessingEvent.notify(SC_ZERO_TIME);
                 continue;
             }
-            if (offset >= CACHE_LINE_SIZE) {
+            if (offset >= CACHE_LINE_SIZE)
+            {
                 std::fprintf(stderr, "Offset out of bounds\n");
                 finishedProcessingEvent.notify(SC_ZERO_TIME);
                 continue;
             }
 
-            std::cout << "Cycle: " << sc_time_stamp() << " Addr: " << addr.read() << " Data: " << wdata.read() << " WE: " << we.read() << std::endl;
+            std::cout << "Cycle: " << sc_time_stamp() << " Addr: " << addr.read() << " Data: " << wdata.read() <<
+                " WE: " << we.read() << std::endl;
 
             // Find the line in the cache that contains the tag and the offset
             auto linePointer = std::find_if(

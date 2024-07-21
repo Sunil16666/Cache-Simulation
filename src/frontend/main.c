@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
+#include <math.h>
 
 #include "file_processing.h"
 
@@ -279,13 +280,22 @@ int main(int argc, char* argv[])
         deleteFileProcessing(fileProc);
     }
 
-    const unsigned cacheSize = cacheLines * cacheLineSize;
+    const unsigned offsetbits = log2(cacheLineSize);
+    const unsigned indexbits = log2(cacheLines);
     for (size_t i = 0; i < num_Requests; i++) // Check if all request adresses are within the bounds of the cache size
     {
-        if (requests[i].addr > cacheSize)
+        const unsigned offset = requests[i].addr & ((1 << offsetbits) - 1);
+        const unsigned index = (requests[i].addr >> offsetbits) & ((1 << indexbits) - 1);
+        if (offset >= cacheLineSize)
         {
-            fprintf(stderr, "Request %zu: Address %u is out of bounds for cache size %u\n", i, requests[i].addr,
-                    cacheSize);
+            fprintf(stderr, "Request %zu: Offset %u is out of bounds for cache line size %u\n", i, offset,
+                    cacheLineSize);
+            free(requests);
+            return 1;
+        }
+        if (index >= cacheLines)
+        {
+            fprintf(stderr, "Request %zu: Index %u is out of bounds for cache lines %u\n", i, index, cacheLines);
             free(requests);
             return 1;
         }

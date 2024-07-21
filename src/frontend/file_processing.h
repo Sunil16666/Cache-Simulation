@@ -15,6 +15,7 @@ typedef struct
 {
     char* csvFilePath;
 } FileProcessing;
+
 /*
     Creates a new FileProcessing object
     parameters:
