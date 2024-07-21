@@ -12,7 +12,7 @@ Von der quelle von Norvig.com und von unserer eigenen Computer, bestimmen wir es
 | L1-Cache-Zugriff         | ~0,5 ns      |
 | L2-Cache-Zugriff         | ~3 ns        |
 | L3-Cache-Zugriff         | ~11 ns        |
-| Hauptspeicher-Zugriff    | 100 ns      |
+| Hauptspeicher-Zugriff    | ~80 ns      |
 
 Um speicherintensive Algorithmen zu analysieren, benutzen wir der Matrixmultiplikations-Algorithmus. Gewählt wegen einer Komplexität von O(n^3) hohe Anzahl Speicherzugriffe, dies ermöglicht, umfassende Benchmarks unserer Simulation zu machen.
 Wir haben ein einfaches Programm in C geschrieben, das eine CSV-Datei für einen Matrixmultiplikationsalgorithmus generiert. Jeder Speicherzugriff wird geloggt, um es zu ermöglichen Benchmarks zu simulieren.
