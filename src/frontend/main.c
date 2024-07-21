@@ -69,7 +69,7 @@ int toSanitizedInt(const char *optarg, int *result) {
 
 int main(int argc, char *argv[]) {
     // Default values for simulation parameters
-    int cycles = 100;
+    int cycles = 10000;
     int directMapped = 0; //if directMapped & fullassociative are 0 the simulation will run fullassociative as default
     int fullassociative = 0;
     unsigned cacheLineSize = 64;

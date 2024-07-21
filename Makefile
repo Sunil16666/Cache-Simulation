@@ -7,7 +7,7 @@
 
 # Entry point for the program
 C_SRCS = src/frontend/file_processing.c src/frontend/main.c
-CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp #src/testing/testbench.cpp
+CPP_SRCS = src/simulation/primitiveGateCountCalc.cpp src/simulation/simulation.cpp # src/testing/testbench.cpp
 
 # Compiler and flags
 CC = gcc
@@ -55,7 +55,7 @@ all: debug
 # Debug build
 debug: CFLAGS += -DDEBUG
 debug: CXXFLAGS += -DDEBUG
-debug: $(testTARGET)
+debug: $(TARGET)
 
 # Release build
 release: CFLAGS += -O2

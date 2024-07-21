@@ -95,7 +95,7 @@ unsigned lruGateCount(unsigned const cacheLines, unsigned const tagBits)
     unsigned const comparatorGateCount = ::comparatorGateCount(tagBits) * cacheLines;
 
     // Estimate for control logic gates for LRU (this is a simplification)
-    unsigned const lruLogicGateCount = cacheLines * 10;
+    unsigned const lruLogicGateCount = cacheLines * 15;
 
     return comparatorGateCount + lruLogicGateCount;
 }
