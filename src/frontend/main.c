@@ -7,13 +7,15 @@
 
 #include "file_processing.h"
 
-struct Request {
+struct Request
+{
     uint32_t addr; ///< Memory address
     uint32_t data; ///< Requested Data
     int we; ///< WriteEnabled (true or false)
-    };
+};
 
-struct Result {
+struct Result
+{
     size_t cycles; ///< Number of cycles needed to complete the simulation
     size_t misses; ///< Number of total misses occured during the simulation
     size_t hits; ///< Number of total hits occured during the simulation
@@ -28,46 +30,51 @@ extern struct Result run_simulation(
     unsigned cacheLatency,
     unsigned memoryLatency,
     size_t num_Requests,
-    struct Request *requests,
-    const char *tracefile);
+    struct Request* requests,
+    const char* tracefile);
 
 
-int toSanitizedInt(const char *optarg, int *result) {
-    char *endptr;
+int toSanitizedInt(const char* optarg, int* result)
+{
+    char* endptr;
     long val;
 
-    errno = 0;    // Used to check if input is 0 and correct, or if the input is incorrect
+    errno = 0; // Used to check if input is 0 and correct, or if the input is incorrect
     val = strtol(optarg, &endptr, 10);
 
     // Check for various possible errors
     if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-        || (errno != 0 && val == 0)) {
-		#ifdef DEBUG
+        || (errno != 0 && val == 0))
+    {
+#ifdef DEBUG
         perror("strtol");
-		#endif
+#endif
         return -1;
     }
 
 
-    if (endptr == optarg) {
-		#ifdef DEBUG
+    if (endptr == optarg)
+    {
+#ifdef DEBUG
         fprintf(stderr, "No digits were found\n");
-		#endif
+#endif
         return -1;
     }
     // Check for any trailing non-numeric characters
-    if (*endptr != '\0') {
-		#ifdef DEBUG
+    if (*endptr != '\0')
+    {
+#ifdef DEBUG
         fprintf(stderr, "Non-numeric characters found: %s\n", endptr);
-		#endif
+#endif
         return -1;
     }
 
-    *result = (int) val;
+    *result = (int)val;
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
     // Default values for simulation parameters
     int cycles = 1000;
     int directMapped = 0; //if directMapped & fullassociative are 0 the simulation will run fullassociative as default
@@ -76,8 +83,8 @@ int main(int argc, char *argv[]) {
     unsigned cacheLines = 16;
     unsigned cacheLatency = 2;
     unsigned memoryLatency = 10;
-    const char *tracefile = NULL;
-    const char *input_file_path = "/csv/matrix_multiplication_trace.csv";
+    const char* tracefile = NULL;
+    const char* input_file_path = "/csv/matrix_multiplication_trace.csv";
 
     static struct option long_options[] = {
         {"cycles", required_argument, 0, 'c'},
@@ -94,91 +101,108 @@ int main(int argc, char *argv[]) {
 
     int option_index = 0;
     int opt;
-	int number_input;
+    int number_input;
 
-	// Parameter handling
-    while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1) {
-        switch (opt) {
-            case 'a': //--directmapped
+    // Parameter handling
+    while ((opt = getopt_long(argc, argv, "c:h", long_options, &option_index)) != -1)
+    {
+        switch (opt)
+        {
+        case 'a': //--directmapped
             {
-				#ifdef DEBUG
+#ifdef DEBUG
                 printf("directmapped\n");
-				#endif
+#endif
                 directMapped = 1;
                 break;
             }
-            case 'b': //--fullassociative
+        case 'b': //--fullassociative
             {
-				#ifdef DEBUG
+#ifdef DEBUG
                 printf("fullassociative\n");
-				#endif
+#endif
 
                 fullassociative = 1;
                 break;
             }
-            case 'c': //--cycles <number> / -c <number>
+        case 'c': //--cycles <number> / -c <number>
             {
-				if(toSanitizedInt(optarg, &number_input) == 0) {
-				#ifdef DEBUG
-                printf("cycles %d\n", number_input);
-				#endif
+                if (toSanitizedInt(optarg, &number_input) == 0)
+                {
+#ifdef DEBUG
+                    printf("cycles %d\n", number_input);
+#endif
 
-                cycles = number_input;
-				} else {
-				return 1;
-				}
+                    cycles = number_input;
+                }
+                else
+                {
+                    return 1;
+                }
                 break;
             }
-            case 'd': //--cacheline-size <number>
+        case 'd': //--cacheline-size <number>
             {
-				if(toSanitizedInt(optarg, &number_input) == 0) {
-				#ifdef DEBUG
-                printf("cacheline-size %d\n", number_input);
-				#endif
+                if (toSanitizedInt(optarg, &number_input) == 0)
+                {
+#ifdef DEBUG
+                    printf("cacheline-size %d\n", number_input);
+#endif
 
-                cacheLineSize = number_input;
-				} else {
-				return 1;
-				}
+                    cacheLineSize = number_input;
+                }
+                else
+                {
+                    return 1;
+                }
                 break;
             }
-            case 'e': //--cachelines <number>
+        case 'e': //--cachelines <number>
             {
-				if(toSanitizedInt(optarg, &number_input) == 0) {
-				#ifdef DEBUG
-				printf("cachelines: %d\n", number_input);
-				#endif
-                cacheLines = number_input;
-				} else {
-				return 1;
-				}
+                if (toSanitizedInt(optarg, &number_input) == 0)
+                {
+#ifdef DEBUG
+                    printf("cachelines: %d\n", number_input);
+#endif
+                    cacheLines = number_input;
+                }
+                else
+                {
+                    return 1;
+                }
                 break;
             }
-            case 'f': //--cache-latency <number>
+        case 'f': //--cache-latency <number>
             {
-				if(toSanitizedInt(optarg, &number_input) == 0) {
-				#ifdef DEBUG
-				printf("cache-latency: %d\n", number_input);
-				#endif
-                cacheLatency = number_input;
-				} else {
-				return 1;
-				}
+                if (toSanitizedInt(optarg, &number_input) == 0)
+                {
+#ifdef DEBUG
+                    printf("cache-latency: %d\n", number_input);
+#endif
+                    cacheLatency = number_input;
+                }
+                else
+                {
+                    return 1;
+                }
                 break;
             }
-            case 'g': //--memory-lateny <number>
+        case 'g': //--memory-lateny <number>
             {
-				if(toSanitizedInt(optarg, &number_input) == 0) {
-				#ifdef DEBUG
-				printf("memory-latency: %d\n",number_input);
-				#endif
-                memoryLatency = number_input;
-				} else {
-				return 1;
-				}
+                if (toSanitizedInt(optarg, &number_input) == 0)
+                {
+#ifdef DEBUG
+                    printf("memory-latency: %d\n", number_input);
+#endif
+                    memoryLatency = number_input;
+                }
+                else
+                {
+                    return 1;
+                }
                 break;
             }
-            case 'h': //--help / -h
+        case 'h': //--help / -h
             {
                 fprintf(stderr, "Usage: %s [options]\n", argv[0]);
                 fprintf(stderr, "  -c, --cycles <number>      Set the number of cycles for the simulation\n");
@@ -189,26 +213,27 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "  --cache-latency <latency>  Set the cache latency\n");
                 fprintf(stderr, "  --memory-latency <latency> Set the memory latency\n");
                 fprintf(stderr, "  --tf=<filename>            Set the trace file name\n");
-          		fprintf(stderr, "  <filename>                 Positional Argument: Set the input file path\n");
-            	fprintf(stderr, "  -h, --help                 Display this help and exit\n");
+                fprintf(stderr, "  <filename>                 Positional Argument: Set the input file path\n");
+                fprintf(stderr, "  -h, --help                 Display this help and exit\n");
                 return 0;
             }
-            case 'i': //--tf=<filename>
+        case 'i': //--tf=<filename>
             {
                 tracefile = optarg;
-				#ifdef DEBUG
-				printf("Tracefile: %s\n", tracefile);
-				#endif
+#ifdef DEBUG
+                printf("Tracefile: %s\n", tracefile);
+#endif
                 break;
             }
-            default:
-                fprintf(stderr, "Unknown option: %s\n", argv[optind - 1]);
-                fprintf(stderr, "Use -h or --help for displaying valid options.\n");
-                return 1;
+        default:
+            fprintf(stderr, "Unknown option: %s\n", argv[optind - 1]);
+            fprintf(stderr, "Use -h or --help for displaying valid options.\n");
+            return 1;
         }
     }
 
-    if (fullassociative && directMapped) {
+    if (fullassociative && directMapped)
+    {
         perror("Please choose only one of --fullassociative or --directmapped");
         return 1;
     }
@@ -219,46 +244,58 @@ int main(int argc, char *argv[]) {
     //Positional parameter handling
     if (optind < argc)
     {
-	    input_file_path = argv[optind];
+        input_file_path = argv[optind];
 
-		#ifdef DEBUG
-	    printf("Input file: %s\n", input_file_path);
-		#endif
+#ifdef DEBUG
+        printf("Input file: %s\n", input_file_path);
+#endif
 
-	    FileProcessing* fileProc = createFileProcessing(input_file_path);
-	    if (!fileProc)
-	    {
-		    fprintf(stderr, "Failed to initialize FileProcessing.\n");
-		    return 1;
-	    }
+        FileProcessing* fileProc = createFileProcessing(input_file_path);
+        if (!fileProc)
+        {
+            fprintf(stderr, "Failed to initialize FileProcessing.\n");
+            return 1;
+        }
 
-	    getRequests(fileProc, &num_Requests, &requests);
+        getRequests(fileProc, &num_Requests, &requests);
 
-	    if (num_Requests > 0 && requests != NULL)
-	    {
-			#ifdef DEBUG
-		    printf("Fetched %zu requests:\n", num_Requests);
-		    for (size_t i = 0; i < num_Requests; i++)
-		    {
-			    printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
-			           i, requests[i].addr, requests[i].data, requests[i].we);
-		    }
-			#endif
-	    }
-	    else
-	    {
-		    printf("No requests fetched or an error occurred.\n");
-		    return 1;
-	    }
-	    // Clean up
-	    deleteFileProcessing(fileProc);
+        if (num_Requests > 0 && requests != NULL)
+        {
+#ifdef DEBUG
+            printf("Fetched %zu requests:\n", num_Requests);
+            for (size_t i = 0; i < num_Requests; i++)
+            {
+                printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+                       i, requests[i].addr, requests[i].data, requests[i].we);
+            }
+#endif
+        }
+        else
+        {
+            printf("No requests fetched or an error occurred.\n");
+            return 1;
+        }
+        // Clean up
+        deleteFileProcessing(fileProc);
+    }
+
+    const unsigned cacheSize = cacheLines * cacheLineSize;
+    for (size_t i = 0; i < num_Requests; i++) // Check if all request adresses are within the bounds of the cache size
+    {
+        if (requests[i].addr > cacheSize)
+        {
+            fprintf(stderr, "Request %zu: Address %u is out of bounds for cache size %u\n", i, requests[i].addr,
+                    cacheSize);
+            free(requests);
+            return 1;
+        }
     }
 
     // Simulation
     struct Result result = run_simulation(
-	    cycles, directMapped, cacheLines, cacheLineSize,
-	    cacheLatency, memoryLatency, num_Requests,
-	    requests, tracefile
+        cycles, directMapped, cacheLines, cacheLineSize,
+        cacheLatency, memoryLatency, num_Requests,
+        requests, tracefile
     );
 
     // Results
@@ -272,10 +309,10 @@ int main(int argc, char *argv[]) {
     // print requests
     for (size_t i = 0; i < num_Requests; i++)
     {
-	    printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
-	           i, requests[i].addr, requests[i].data, requests[i].we);
+        printf("Request %zu: Addr = %u, Data = %u, WE = %d\n",
+               i, requests[i].addr, requests[i].data, requests[i].we);
     }
 
-	free(requests);
+    free(requests);
     return 0;
 }
